@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorator="Layouts/BaseLayout">
+<head>
+    <title layout:title-pattern="$DECORATOR_TITLE - $CONTENT_TITLE">Register User</title>
+
+    <script th:inline="javascript">
+    /*<![CDATA[*/
+        $(document).ready(function(){
+            $("#registerButton").click(function(){
+                if( !isEmail($("#emailAddr").val())) {
+                    $(".error-message").show().html("Please Enter Valid Email Address");
+                } else {
+                    $("#registerUserForm").submit();
+                 }
+            });
+        });
+
+        function isEmail(email) {
+          var regex = /^([a-zA-Z0-9_.+-])+\@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$/;
+          return regex.test(email);
+        }
+/*]]>*/
+
+    </script>
+</head>
+
+<body>
+<section layout:fragment="custom-body-content">
+    <div class="container">
+        <h4 align="center">Register new user</h4>
+        <p th:text="${registerError}" class="error-message"> Error Message</p>
+
+        <form id="registerUserForm" th:action="@{/createUser}" th:object="${userObj}" method="post" class="form-signin">
+            <section th:replace="Layouts/RegisterUserLayout::register-new-user"></section>
+            <input type="submit" id="registerButton" class="btn btn-lg btn-primary btn-block" value="Submit"/>
+            <a href="#" th:href="@{/}">Click here to go back</a><br/>
+        </form>
+
+    </div>
+</section>
+</body>
+</html>

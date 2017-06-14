@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorator="Layouts/BaseLayout">
+<head>
+    <title layout:title-pattern="$DECORATOR_TITLE - $CONTENT_TITLE">Dashboard</title>
+
+    <link rel="stylesheet" type="text/css" th:href="@{/css/home-page.css}"/>
+</head>
+<body>
+<section layout:fragment="custom-body-content">
+    <div class="container-fluid">
+        <div class="row" th:if="${userObj.userRole == 'ADMIN'}">
+            <div class="col-xs-2">
+                <ul class="nav nav-sidebar" id="adminRoleList">
+                    <li><a href="#" th:href="@{/getAllUsers}">List of Residents</a></li>
+                    <li><a href="#" th:href="@{/transactionSummary}">Transaction Summary</a></li>
+                    <li><a href="#" th:href="@{/defaultMaintAmount}">Default Maintenance Amount</a></li>
+                </ul>
+            </div>
+            <div class="col-xs-10">
+                <section class="main" layout:fragment="custom-main-content">This is the dashboard</section>
+            </div>
+        </div>
+        <div class="row" th:if="${userObj.userRole == 'USER'}">
+            <section class="main" th:replace="Layouts/ProfileLayout::user-profile-content">Custom content</section>
+            <section class="main" th:replace="Layouts/TransactionHistoryLayout::user-transaction-content">Custom content</section>
+        </div>
+    </div>
+</section>
+</body>
+</html>

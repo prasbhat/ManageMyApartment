@@ -1,0 +1,57 @@
+@CHARSET "ISO-8859-1";
+
+.form-signin {
+  max-width: 330px;
+  padding: 15px;
+  margin: 0 auto;
+}
+
+.form-signin input[type="email"] {
+  margin-bottom: -1px;
+  border-bottom-right-radius: 0;
+  border-bottom-left-radius: 0;
+}
+.form-signin input[type="password"] {
+  margin-bottom: 10px;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
+
+.error-message{
+	 color:red;
+	 text-align:center;
+	 font-weight: bold;
+}
+
+header {
+    background: #eee;
+    vertical-align: middle;
+    text-align: center;
+    font-weight: bold;
+    font-family: "Times New Roman", Times, serif;
+    font-size: 20px;
+}
+
+header>div {
+    font-weight: normal;
+    text-align: right;
+    font-size: 15px;
+}
+
+header>span {
+    font-weight: normal;
+    text-align: left;
+    font-size: 15px;
+}
+
+footer {
+    background: #eee;
+    padding: 5px;
+    margin: 10px 0;
+    text-align: center;
+    font-weight: bold;
+}
+
+.right {
+    text-align: right;
+}

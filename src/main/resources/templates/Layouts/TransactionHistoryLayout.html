@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+
+</head>
+<body>
+<section th:fragment="user-transaction-content">
+    <div th:if="${transactionSummaryList != null}" align="center">
+        <h4>Given below are your transaction details</h4>
+        <table id="tableDiv" class="table table-striped">
+            <thead>
+            <tr>
+                <th>Date</th>
+                <th>Description</th>
+                <th>Flat Number</th>
+                <th>Transaction Type</th>
+                <th>Mode of Payment</th>
+                <th>Amount(&#8377;)</th>
+                <th th:if="${adminPage}">Edit</th>
+                <th th:if="${adminPage}">Delete</th>
+            </tr>
+            </thead>
+            <tbody id="employee_data_body">
+            <tr th:each="transactionSummary : ${transactionSummaryList}">
+                <td th:text="${transactionSummary.date}"/>
+                <td th:text="${transactionSummary.description}"/>
+                <td th:text="${transactionSummary.flatNumber}"/>
+                <td id="expense-type" class="expense_type" th:text="${transactionSummary.expenseType}"/>
+                <td th:text="${transactionSummary.modeOfPayment}"/>
+                <td id="expense-amount" class="expense_amount" th:text="${transactionSummary.amount}"/>
+                <td th:if="${adminPage}">
+                    <a href="#">Edit</a>
+                </td>
+                <td th:if="${adminPage}">
+                    <a href="#"
+                       th:href="@{/deleteTransaction/{transactionId}/(transactionId=${transactionSummary.systemTransactionId})}">Delete</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</section>
+</body>
+</html>

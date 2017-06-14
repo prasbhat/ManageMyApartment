@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorator="Layouts/MenuLayout">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Expense Tracker page</title>
+    <script th:inline="javascript">
+    /*<![CDATA[*/
+        $(document).ready(function(){
+            $("#add-row").click(function(){
+                $("#add_row_table").toggle();
+            });
+
+            calculateSum();
+
+        });
+
+        function calculateSum(){
+            var sum =0;
+
+
+            $('#employee_data_body tr').each(function()
+            {
+              var expenseType = $(this).find(".expense_type").text();
+              var expenseAmount = $(this).find(".expense_amount").text();
+              if(expenseType == 'EXPENSE'){
+                sum -= parseFloat(expenseAmount);
+              } else {
+                sum += parseFloat(expenseAmount);
+              }
+            });
+
+            if(sum >= 0){
+                $("#total-sum").html(sum)
+                               .css('color', 'green');
+            } else {
+                $("#total-sum").html(sum)
+                               .css('color', 'red');
+            }
+
+        };
+/*]]>*/
+
+    </script>
+
+</head>
+<body>
+<section layout:fragment="custom-main-content">
+    <div class="error-message" th:if="${bindErrors != null}">
+        <div th:each="err : ${bindErrors}">
+            <span th:text="${err.key}"></span>&nbsp;<span th:text="${err.value}"></span>
+        </div>
+    </div>
+
+    <a href="#" id="add-row">Add New Transaction</a>&nbsp;<br/>
+
+    <section th:replace="Layouts/TransactionHistoryLayout::user-transaction-content">Custom content</section>
+    <hr/>
+    <div style="text-align:center;font-weight: bold;font-size: 20px;">
+        Total Expenditure: <span id="total-sum"></span>
+    </div>
+    <hr/>
+    <div id="add_row_table" style="display:none;">
+        <form id="addRowForm" th:action="@{/addTransaction}" th:object="${newTransactionObj}" method="post">
+            <table id="AddRowTable" class="table table-striped">
+                <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Description</th>
+                    <th>Flat Number</th>
+                    <th>Expense Type</th>
+                    <th>Mode of Payment</th>
+                    <th>Amount(&#8377;)</th>
+                    <th colspan="2">Add</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td><input type="date" placeholder="yyyy-MM-dd" name="date" th:field="*{date}"/></td>
+                    <td><input type="text" placeholder="Enter description" name="description" th:field="*{description}"/>
+                    </td>
+                    <td>
+                        <select th:field="*{flatNumber}">
+                            <option th:each="flatNumber : ${flatNumberList}"
+                                    th:value="${flatNumber}"
+                                    th:text="${flatNumber}">0
+                            </option>
+                        </select>
+                    </td>
+                    <td>
+                        <select th:field="*{expenseType}">
+                            <option th:each="expenseType : ${expenseTypeList}"
+                                    th:value="${expenseType}"
+                                    th:text="${expenseType}">EXPENSE
+                            </option>
+                        </select>
+                    </td>
+                    <td>
+                        <select th:field="*{modeOfPayment}">
+                            <option th:each="modeOfPayment : ${modeOfPaymentList}"
+                                    th:value="${modeOfPayment}"
+                                    th:text="${modeOfPayment}">Cash
+                            </option>
+                        </select>
+                    </td>
+                    <td><input type="text" placeholder="Enter amount" name="amount" th:field="*{amount}"/></td>
+                    <td colspan="2"><input type="submit" id="addButton" class="button" value="Add"/></td>
+                </tr>
+                </tbody>
+            </table>
+        </form>
+    </div>
+</section>
+</body>
+</html>

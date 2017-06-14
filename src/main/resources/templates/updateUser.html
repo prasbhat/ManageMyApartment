@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorator="Layouts/BaseLayout">
+<head>
+    <title layout:title-pattern="$DECORATOR_TITLE - $CONTENT_TITLE">Update User</title>
+
+</head>
+<body>
+<section layout:fragment="custom-body-content">
+    <div class="container">
+
+        <h4 align="center">Update Resident Details</h4>
+
+        <form id="updateUserForm" th:action="@{/updateUser}" th:object="${updateUserObj}" method="post" class="form-signin">
+            <section th:replace="Layouts/RegisterUserLayout::register-new-user"></section>
+            <label>User Role</label>
+            <select th:field="*{userRole}" class="form-control">
+                <option th:each="userRole : ${userRoleList}"
+                        th:value="${userRole}"
+                        th:text="${userRole}">User
+                </option>
+            </select>
+            <label>Is Active</label>
+            <select th:field="*{isActive}" class="form-control">
+                <option th:each="isActive : ${isActiveList}"
+                        th:value="${isActive}"
+                        th:text="${isActive}">TRUE
+                </option>
+            </select>
+            <input type="hidden" name="password" th:field="*{password}"/>
+            <input type="hidden" name="systemUserId" th:field="*{systemUserId}"/>
+
+            <input type="submit" id="updateButton" class="btn btn-lg btn-primary btn-block" value="Update"/>
+            <a href="#" th:href="@{/}">Click here to go back</a><br/>
+        </form>
+
+    </div>
+</section>
+</body>
+</html>

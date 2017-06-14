@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Profile page</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/login-page.css}"/>
+</head>
+<body>
+<section th:fragment="user-profile-content">
+    <div id="profileDiv" th:if="${userObj != null}" align="center">
+        <h1>Given below are your details</h1>
+        <table border="1">
+            <tr>
+                <th>Firstname</th>
+                <td th:text="${userObj.firstname}"></td>
+            </tr>
+            <tr>
+                <th>Lastname</th>
+                <td th:text="${userObj.lastname}"></td>
+            </tr>
+            <tr>
+                <th>Email Address/Username</th>
+                <td th:text="${userObj.emailAddr}"></td>
+            </tr>
+            <tr>
+                <th>Phone number</th>
+                <td th:text="${userObj.phoneNbr}"></td>
+            </tr>
+            <tr>
+                <th>Flat number</th>
+                <td th:text="${userObj.flatNumber}"></td>
+            </tr>
+            <tr>
+                <th>Resident Status</th>
+                <td th:text="${userObj.residentStatus}"></td>
+            </tr>
+            <tr>
+                <th>Pending Maintenance Amount</th>
+                <td th:text="${userObj.pendingAmount}"></td>
+            </tr>
+        </table>
+    </div>
+</section>
+</body>
+</html>

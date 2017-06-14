@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"/>
+    <title>Manage My Apartment</title>
+
+    <link rel="stylesheet" type="text/css" href="./css/login-page.css"/>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.8/angular.min.js"></script>
+    <script type="text/javascript">
+var app = angular.module('MMALoginApp', []);
+
+app.controller('MMALoginController', function($scope, $http, $window) {
+	$scope.submit=function(){
+		alert(angular.toJson($scope.form));
+
+		var method = "POST";
+		var url = "http://localhost:8080/ManageMyApartment/login";
+
+		$http({
+			method : method,
+			url : url,
+			data : angular.toJson($scope.form),
+			headers : {
+				'Content-Type' : 'application/json'
+			}
+		}).then( _success, _error );
+	}
+
+	function _success(response) {
+		console.log(response);
+		<!--$window.location.href = "home.html";-->
+	}
+
+	function _error(response) {
+		console.log(response);
+		$window.location.href = response;
+	}
+});
+
+
+
+    </script>
+
+</head>
+<body data-ng-app="MMALoginApp">
+<div data-ng-controller="MMALoginController">
+    <h2>Login Form</h2>
+
+    <form id="loginForm" ng-submit="submit()">
+        <div class="container">
+            <label><b>Username</b></label>
+            <input type="text" placeholder="Enter Username" name="emailAddr" data-ng-model="form.emailAddr"
+                   required="true"/>
+            <label><b>Password</b></label>
+            <input type="password" placeholder="Enter Password" name="password" data-ng-model="form.password"
+                   required="true"/>
+
+            <button type="submit">Login</button>
+            <div class="msgDisplayClass" data-ng-if="msgDisplay" data-ng-style="myStyle">{{ errorMsg }}</div>
+        </div>
+    </form>
+</div>
+</body>
+</html>

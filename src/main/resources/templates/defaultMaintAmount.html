@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorator="Layouts/MenuLayout">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Default Maintenance page</title>
+    <script th:inline="javascript">
+    /*<![CDATA[*/
+        $(document).ready(function(){
+            $("#add-row").click(function(){
+                $("#defaultAmountForm").toggle();
+            });
+        });
+/*]]>*/
+
+    </script>
+
+</head>
+<body>
+<section layout:fragment="custom-main-content">
+    <div class="error-message" th:if="${bindErrors != null}">
+        <div th:each="err : ${bindErrors}">
+            <span th:text="${err.key}"></span>&nbsp;<span th:text="${err.value}"></span>
+        </div>
+    </div>
+    <a href="#" id="add-row">Add New Transaction</a>&nbsp;<br/>
+
+    <div th:if="${maintObjList != null}" align="center">
+        <h4>Given below are details</h4>
+        <table id="tableDiv" class="table table-striped">
+            <thead>
+            <tr>
+                <th>Month-Year</th>
+                <th>Default Maintenance Amount</th>
+                <th>Edit</th>
+                <th>Delete</th>
+            </tr>
+            </thead>
+            <tbody id="employee_data_body">
+            <tr th:each="maintObj : ${maintObjList}">
+                <td th:text="${maintObj.monthYear}"/>
+                <td th:text="${maintObj.defaultAmount}"/>
+                <td>
+                    <a href="#">Edit</a>
+                </td>
+                <td>
+                    <a href="#">Delete</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <form id="defaultAmountForm" class="form-inline" th:action="@{/defaultAmount}" th:object="${maintObj}"
+          method="post" style="display:none;">
+        <div class="form-group">
+            <label><b>Default Maintenance Amount</b></label>
+            <input type="text" placeholder="Enter Amount" name="defaultAmount" th:field="*{defaultAmount}"
+                   required="true"/>
+        </div>
+        <div class="form-group">
+            <label><b>Month/Year</b></label>
+            <input type="month" placeholder="Enter Month" name="monthYear" th:field="*{monthYear}" required="true"/>
+        </div>
+
+        <input type="submit" id="submitButton" class="btn btn-primary" value="Submit"/>
+
+    </form>
+</section>
+</body>
+</html>

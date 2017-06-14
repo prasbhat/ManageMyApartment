@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Register User Layout</title>
+
+</head>
+<body>
+<section th:fragment="register-new-user">
+    <div class="error-message" th:if="${bindErrors != null}">
+        <div th:each="err : ${bindErrors}">
+            <span th:text="${err.key}"></span>&nbsp;<span th:text="${err.value}"></span>
+        </div>
+    </div>
+
+    <label><b>Flat number</b></label>
+    <select th:field="*{flatNumber}" class="form-control">
+        <option th:each="flatNumber : ${flatNumberList}"
+                th:value="${flatNumber}"
+                th:text="${flatNumber}">101
+        </option>
+    </select>
+    <label><b>Email Address</b></label>
+    <input type="text" class="form-control" placeholder="Enter Email Address" name="emailAddr" th:field="*{emailAddr}"
+           required="true"/>
+    <label>Firstname</label>
+    <input type="text" class="form-control" placeholder="Enter First name" name="firstname" th:field="*{firstname}" required="true"/>
+    <label>Lastname</label>
+    <input type="text" class="form-control" placeholder="Enter Last name" name="lastname" th:field="*{lastname}" required="true"/>
+    <label>Phone number</label>
+    <input type="text" class="form-control" placeholder="Enter Phone number" name="phoneNbr" th:field="*{phoneNbr}" required="true"/>
+    <label>Resident Status</label>
+    <select th:field="*{residentStatus}" class="form-control">
+        <option th:each="residentStatus : ${residentStatusList}"
+                th:value="${residentStatus}"
+                th:text="${residentStatus}">Owner
+        </option>
+    </select>
+</section>
+</body>
+</html>
