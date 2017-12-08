@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:dt="http://www.thymeleaf.org/dandelion/datatables">
+<head>
+    <meta charset="UTF-8"/>
+
+</head>
+<body>
+<section th:fragment="user-transaction-content">
+    <div id="section-details" th:if="${transactionSummaryList != null}" align="center">
+        <h4 style="color: #ffffff;">Transaction Details for Month of <span th:text="${currYearMonth}"/></h4>
+        <table id="tableCurrent" class="table table-striped" dt:table="true">
+            <thead class="floral-background">
+            <tr>
+                <th>Date</th>
+                <th>Description</th>
+                <th>Flat Number</th>
+                <th>Transaction Type</th>
+                <th>Mode of Payment</th>
+                <th>Amount(&#8377;)</th>
+                <th>Uploaded Receipt</th>
+                <th th:if="${isAdmin and !reportsPage}">Delete</th>
+            </tr>
+            </thead>
+            <tbody id="employee_data_body">
+            <tr th:each="transactionSummary : ${transactionSummaryList}">
+                <td th:text="${transactionSummary.date}"/>
+                <td th:text="${transactionSummary.description}"/>
+                <td th:text="${transactionSummary.flatNumber}"/>
+                <td id="expense-type" class="expense_type" th:text="${transactionSummary.expenseType}"/>
+                <td th:text="${transactionSummary.modeOfPayment}"/>
+                <td id="expense-amount" class="expense_amount" th:text="${transactionSummary.amount}"/>
+                <td th:if="${transactionSummary.uploadFile == null}">
+                    NA
+                </td>
+                <td th:if="${transactionSummary.uploadFile != null}">
+                    <a href="#" th:href="@{/getPdf(systemId=${transactionSummary.systemTransactionId},
+                    docType=${transactionSummary.uploadFile.docUploadType})}">
+                        <span th:text="${transactionSummary.uploadFile.filename}"></span>
+                    </a>
+                </td>
+                <td th:if="${isAdmin and !reportsPage}">
+                    <a href="#"
+                       th:href="@{/deleteTransaction/{transactionId}/(transactionId=${transactionSummary.systemTransactionId})}">
+                        Delete</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+
+    <div align="center" id="section-hist-details" style="display:none;">
+        <h4 align="center" style="color: #ffffff;">Transaction Details History</h4>
+        <table id="tableHist" class="table table-striped" dt:table="true">
+            <thead class="floral-background">
+            <tr>
+                <th>Date</th>
+                <th>Description</th>
+                <th>Flat Number</th>
+                <th>Transaction Type</th>
+                <th>Mode of Payment</th>
+                <th>Amount(&#8377;)</th>
+                <th>Uploaded Receipt</th>
+            </tr>
+            </thead>
+            <tbody id="employee_data_body2">
+            <tr th:each="transactionSummary : ${transactionSummaryHistList}">
+                <td th:text="${transactionSummary.date}"/>
+                <td th:text="${transactionSummary.description}"/>
+                <td th:text="${transactionSummary.flatNumber}"/>
+                <td id="expense-type2" class="expense_type" th:text="${transactionSummary.expenseType}"/>
+                <td th:text="${transactionSummary.modeOfPayment}"/>
+                <td id="expense-amount2" class="expense_amount" th:text="${transactionSummary.amount}"/>
+                <td th:if="${transactionSummary.uploadFile == null}">
+                    NA
+                </td>
+                <td th:if="${transactionSummary.uploadFile != null}">
+                    <a href="#" th:href="@{/getPdf(systemId=${transactionSummary.systemTransactionId},
+                    docType=${transactionSummary.uploadFile.docUploadType})}">
+                        <span th:text="${transactionSummary.uploadFile.filename}"></span>
+                    </a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+        <hr/>
+    </div>
+    <h6 style="color: #FFFFFF;">NOTE: Flat number '0' means Association transaction</h6>
+</section>
+</body>
+</html>

@@ -4,27 +4,43 @@
 <head>
     <title layout:title-pattern="$DECORATOR_TITLE - $CONTENT_TITLE">Dashboard</title>
 
-    <link rel="stylesheet" type="text/css" th:href="@{/css/home-page.css}"/>
 </head>
 <body>
 <section layout:fragment="custom-body-content">
     <div class="container-fluid">
-        <div class="row" th:if="${userObj.userRole == 'ADMIN'}">
-            <div class="col-xs-2">
+        <div class="row">
+            <div class="col-xs-2  background">
                 <ul class="nav nav-sidebar" id="adminRoleList">
-                    <li><a href="#" th:href="@{/getAllUsers}">List of Residents</a></li>
-                    <li><a href="#" th:href="@{/transactionSummary}">Transaction Summary</a></li>
-                    <li><a href="#" th:href="@{/defaultMaintAmount}">Default Maintenance Amount</a></li>
+                    <li><a href="#" th:href="@{/getAllUsers(reports='false')}">Resident(s) Details</a></li>
+                    <li><a href="#" th:href="@{/transactionSummary(reports='false')}">Transaction Summary</a></li>
+                    <li><a href="#" th:href="@{/projectedExpenseSummary(reports='false')}">Projected Summary</a></li>
+                    <li th:if="${isAdmin}"><a href="#" th:href="@{/freezeMonth}">Freeze Month</a></li>
+                    <li><a href="#" th:href="@{/feedback}">Give Feedback</a></li>
+                    <ul th:if="${isSuperAdmin}" class="nav nav-sidebar" style="color:#fff;">Super
+                        Admin Page
+                        <li><a href="#" th:href="@{/getAuditTrailLog}">Audit Trail Logs</a></li>
+                        <li><a href="#" th:href="@{/uploadDocuments}">Upload Documents</a></li>
+                    </ul>
+                    <ul th:if="${isAdmin}" class="nav nav-sidebar" style="color:#fff;">Reports Page
+                        <li><a href="#" th:href="@{/getAllUsers(reports='true')}">User Reports</a></li>
+                        <li>
+                            <a href="#" th:href="@{/monthlyReport(reports='transact')}">
+                                Transaction Summary (Per Month)</a>
+                        </li>
+                        <li>
+                            <a href="#" th:href="@{/monthlyReport(reports='project')}">
+                                Projected Summary (Per Month)</a>
+                        </li>
+                    </ul>
                 </ul>
             </div>
             <div class="col-xs-10">
-                <section class="main" layout:fragment="custom-main-content">This is the dashboard</section>
+                <span id="menu-section">
+                    <section layout:fragment="custom-main-content">This is the dashboard</section>
+                </span>
             </div>
         </div>
-        <div class="row" th:if="${userObj.userRole == 'USER'}">
-            <section class="main" th:replace="Layouts/ProfileLayout::user-profile-content">Custom content</section>
-            <section class="main" th:replace="Layouts/TransactionHistoryLayout::user-transaction-content">Custom content</section>
-        </div>
+
     </div>
 </section>
 </body>

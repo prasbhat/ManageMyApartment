@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorator="Layouts/MenuLayout" xmlns:dt="http://www.thymeleaf.org/dandelion/datatables">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Expense Tracker page</title>
+    <!--<script th:inline="javascript">-->
+    <!--/*<![CDATA[*/-->
+        <!--$(document).ready(function(){-->
+            <!--$("#add-row").click(function(){-->
+                <!--$("#add_row_table").toggle();-->
+            <!--});-->
+        <!--});-->
+    <!--/*]]>*/-->
+
+    <!--</script>-->
+
+</head>
+<body>
+<section layout:fragment="custom-main-content">
+    <div class="error-message" th:if="${bindErrors != null}">
+        <div th:each="err : ${bindErrors}">
+            <span th:text="${err.key}"></span>&nbsp;<span th:text="${err.value}"></span>
+        </div>
+    </div>
+
+    <!--<a href="#" id="add-row" th:if="${isSuperAdmin}">Click Here to close the Month Transaction</a>&nbsp;<br/>-->
+    <!--<div id="add_row_table" style="display:none;" th:if="${isSuperAdmin}">-->
+        <!--<form id="addRowForm" th:action="@{/addFreezeMonth}" th:object="${freezeMonthObj}" method="post">-->
+            <!--<table id="AddRowTable" class="table table-striped">-->
+                <!--<thead>-->
+                <!--<tr>-->
+                    <!--<th>Date</th>-->
+                    <!--<th>Freeze</th>-->
+                 <!--</tr>-->
+                <!--</thead>-->
+                <!--<tbody>-->
+                <!--<tr>-->
+                    <!--<td><input type="month" placeholder="yyyy-MM-dd" name="monthYear" th:field="*{monthYear}"/></td>-->
+                    <!--<td colspan="2" ><input type="submit" id="addButton" class="button" value="Freeze"/></td>-->
+                <!--</tr>-->
+                <!--</tbody>-->
+            <!--</table>-->
+        <!--</form>-->
+    <!--</div>-->
+    <!--<hr/>-->
+
+    <div th:if="${fullMonthList != null}" align="center">
+        <h4>Details about the months freezed/un-freezed</h4>
+        <table id="tableDiv" class="table table-striped" dt:table="true">
+            <thead class="floral-background">
+            <tr>
+                <th>Date</th>
+                <th>Total Expense</th>
+                <th>No Of Flats</th>
+                <th>Monthly Maintenance</th>
+                <th>Description</th>
+                <th th:if="${isSuperAdmin}">(Un)Freeze</th>
+            </tr>
+            </thead>
+            <tbody id="employee_data_body">
+            <tr th:each="fullMonthObj : ${fullMonthList}">
+                <td th:text="${fullMonthObj.monthYear}"/>
+                <td th:text="${fullMonthObj.totalExpense}"/>
+                <td th:text="${fullMonthObj.noOfFlats}"/>
+                <td th:text="${fullMonthObj.monthlyMaint}"/>
+                <span th:if="${fullMonthObj.freeze}">
+                    <td>Freezed</td>
+                    <td th:if="${isSuperAdmin}">
+                        <a href="#"
+                           th:href="@{/editFreezeMonth/{freezeMonthId}/(freezeMonthId=${fullMonthObj.systemMonthlyExpenseId})}">
+                            <input type="submit" id="editButton" class="button" value="Open"/>
+                        </a>
+                    </td>
+                </span>
+                <span th:if="${!fullMonthObj.freeze}">
+                    <td>Un-Freezed</td>
+                    <td th:if="${isSuperAdmin}">
+                        <a href="#"
+                           th:href="@{/editFreezeMonth/{freezeMonthId}/(freezeMonthId=${fullMonthObj.systemMonthlyExpenseId})}">
+                            <input type="submit" id="editButton2" class="button" value="Close"/>
+                        </a>
+                    </td>
+                </span>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <hr/>
+
+</section>
+</body>
+</html>

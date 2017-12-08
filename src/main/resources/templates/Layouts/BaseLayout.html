@@ -4,23 +4,25 @@
 <head>
     <meta charset="UTF-8"/>
     <title>Manage My Apartment</title>
-    <link rel="stylesheet" type="text/css" href="../css/login-page.css" th:href="@{/css/login-page.css}"/>
+    <link rel="stylesheet" type="text/css" href="../css/manage-my-apartment.css" th:href="@{/css/manage-my-apartment.css}"/>
+    <link rel="stylesheet" type="text/css" href="../css/login-style.css" th:href="@{/css/login-style.css}"/>
     <link rel="stylesheet" type="text/css" th:href="@{/bootstrap-3.3.7/css/bootstrap.min.css}"/>
     <link rel="stylesheet" type="text/css" th:href="@{/bootstrap-3.3.7/css/bootstrap-theme.min.css}"/>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+    <script th:src="@{/bootstrap-3.3.7/js/bootstrap.min.js}"></script>
 </head>
 
 <body>
-<header th:fragment="custom-header">Welcome to S V Lakeview Apartment management site <br/>
-    <div th:if="${userObj != null and userObj.emailAddr != null}">
-        Logged in as :: <b th:text="${userObj.firstname}"></b>&nbsp;<b th:text="${userObj.lastname}"></b>&nbsp;
-        <a th:href="@{/}">Logout</a>
+<header th:fragment="custom-header">
+    <img th:src="@{/images/logo.jpg}" style="width:130px;height:65px"/>
+    S V LAKEVIEW APARTMENT OWNERS ASSOCIATION MANAGEMENT PORTAL
+    <div th:if="${loggedInUser != null and loggedInUser.emailAddr != null}">
+        Logged in as :: <b th:text="${loggedInUser.firstname}"></b>&nbsp;<b th:text="${loggedInUser.lastname}"></b>&nbsp;
+        <a th:href="@{/login}">Logout</a>
     </div>
 </header>
-<section layout:fragment="custom-body-content">
-    <p>Your page content goes here</p>
-</section>
-<footer th:fragment="custom-footer">&copy;Manage My Apartment</footer>
+<section layout:fragment="custom-body-content" class="light-green-background"></section>
+<footer th:fragment="custom-footer"> Copyright &copy; Manage My Apartment | 2017</footer>
 </body>
 </html>

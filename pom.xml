@@ -9,7 +9,7 @@
     <packaging>jar</packaging>
 
     <name>Apartment Management System</name>
-    <description>Apartment Management System based on Spring boot and Angular JS</description>
+    <description>Apartment Management System based on Spring boot</description>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -55,6 +55,14 @@
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
         </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.apache.derby/derbyclient -->
+        <dependency>
+            <groupId>org.apache.derby</groupId>
+            <artifactId>derbyclient</artifactId>
+            <version>10.14.1.0</version>
+        </dependency>
+
         <dependency>
             <groupId>org.json</groupId>
             <artifactId>json</artifactId>
@@ -74,31 +82,49 @@
             <version>1.2.9</version>
         </dependency>
 
-        <!-- Automating the rebuild and restart of web server -->
-        <!--<dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-devtools</artifactId>
-        </dependency>-->
+        <!-- Dandelion-datatables when using Thymeleaf and Spring Boot -->
+        <!-- https://mvnrepository.com/artifact/com.github.dandelion/datatables-thymeleaf -->
+        <dependency>
+            <groupId>com.github.dandelion</groupId>
+            <artifactId>datatables-thymeleaf</artifactId>
+            <version>1.1.0</version>
+        </dependency>
 
-        <!-- Tomcat embedded container-->
-        <!--<dependency>-->
-        <!--<groupId>org.springframework.boot</groupId>-->
-        <!--<artifactId>spring-boot-starter-tomcat</artifactId>-->
-        <!--<scope>provided</scope>-->
-        <!--</dependency>-->
+        <!-- https://mvnrepository.com/artifact/com.github.dandelion/dandelion-thymeleaf -->
+        <dependency>
+            <groupId>com.github.dandelion</groupId>
+            <artifactId>dandelion-thymeleaf</artifactId>
+            <version>1.1.1</version>
+        </dependency>
 
-        <!--&lt;!&ndash; JSTL for JSP &ndash;&gt;-->
-        <!--<dependency>-->
-        <!--<groupId>javax.servlet</groupId>-->
-        <!--<artifactId>jstl</artifactId>-->
-        <!--</dependency>-->
+        <!-- https://mvnrepository.com/artifact/com.github.dandelion/dandelion-core -->
+        <dependency>
+            <groupId>com.github.dandelion</groupId>
+            <artifactId>dandelion-core</artifactId>
+            <version>1.1.1</version>
+        </dependency>
 
-        <!--&lt;!&ndash; Need this to compile JSP &ndash;&gt;-->
-        <!--<dependency>-->
-        <!--<groupId>org.apache.tomcat.embed</groupId>-->
-        <!--<artifactId>tomcat-embed-jasper</artifactId>-->
-        <!--<scope>provided</scope>-->
-        <!--</dependency>-->
+        <!-- https://mvnrepository.com/artifact/com.itextpdf/itextpdf -->
+        <dependency>
+            <groupId>com.itextpdf</groupId>
+            <artifactId>itextpdf</artifactId>
+            <version>5.5.12</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.xhtmlrenderer/flying-saucer-core -->
+        <dependency>
+            <groupId>org.xhtmlrenderer</groupId>
+            <artifactId>flying-saucer-core</artifactId>
+            <version>9.1.9</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.xhtmlrenderer/flying-saucer-pdf-itext5 -->
+        <dependency>
+            <groupId>org.xhtmlrenderer</groupId>
+            <artifactId>flying-saucer-pdf-itext5</artifactId>
+            <version>9.1.9</version>
+        </dependency>
+
     </dependencies>
 
     <build>

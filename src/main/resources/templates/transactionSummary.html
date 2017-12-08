@@ -4,45 +4,7 @@
 <head>
     <meta charset="UTF-8"/>
     <title>Expense Tracker page</title>
-    <script th:inline="javascript">
-    /*<![CDATA[*/
-        $(document).ready(function(){
-            $("#add-row").click(function(){
-                $("#add_row_table").toggle();
-            });
-
-            calculateSum();
-
-        });
-
-        function calculateSum(){
-            var sum =0;
-
-
-            $('#employee_data_body tr').each(function()
-            {
-              var expenseType = $(this).find(".expense_type").text();
-              var expenseAmount = $(this).find(".expense_amount").text();
-              if(expenseType == 'EXPENSE'){
-                sum -= parseFloat(expenseAmount);
-              } else {
-                sum += parseFloat(expenseAmount);
-              }
-            });
-
-            if(sum >= 0){
-                $("#total-sum").html(sum)
-                               .css('color', 'green');
-            } else {
-                $("#total-sum").html(sum)
-                               .css('color', 'red');
-            }
-
-        };
-/*]]>*/
-
-    </script>
-
+    <script th:src="@{/js/manageMyApartment.js}"></script>
 </head>
 <body>
 <section layout:fragment="custom-main-content">
@@ -52,18 +14,19 @@
         </div>
     </div>
 
-    <a href="#" id="add-row">Add New Transaction</a>&nbsp;<br/>
-
-    <section th:replace="Layouts/TransactionHistoryLayout::user-transaction-content">Custom content</section>
-    <hr/>
-    <div style="text-align:center;font-weight: bold;font-size: 20px;">
-        Total Expenditure: <span id="total-sum"></span>
+    <div>
+        <a href="#" id="add-row" th:if="${isAdmin}">Add New Transaction</a>
+        <!--<span class="right"><a href="#" th:href="@{/transactionSummaryHistory(reports='false')}">View History</a>-->
+        <!--</span>-->
+        <span class="right"><a href="#" id="history-details">View History</a>
+            <a href="#" id="current-link-details" style="display:none;">View Current</a>
+        </span>
     </div>
-    <hr/>
     <div id="add_row_table" style="display:none;">
-        <form id="addRowForm" th:action="@{/addTransaction}" th:object="${newTransactionObj}" method="post">
+        <form id="addRowForm" th:action="@{/addTransaction}" th:object="${newTransactionObj}" method="post"
+              enctype="multipart/form-data">
             <table id="AddRowTable" class="table table-striped">
-                <thead>
+                <thead class="floral-background">
                 <tr>
                     <th>Date</th>
                     <th>Description</th>
@@ -71,13 +34,15 @@
                     <th>Expense Type</th>
                     <th>Mode of Payment</th>
                     <th>Amount(&#8377;)</th>
+                    <th>Upload Receipt</th>
                     <th colspan="2">Add</th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr>
                     <td><input type="date" placeholder="yyyy-MM-dd" name="date" th:field="*{date}"/></td>
-                    <td><input type="text" placeholder="Enter description" name="description" th:field="*{description}"/>
+                    <td><input type="text" placeholder="Enter description" name="description"
+                               th:field="*{description}"/>
                     </td>
                     <td>
                         <select th:field="*{flatNumber}">
@@ -104,10 +69,30 @@
                         </select>
                     </td>
                     <td><input type="text" placeholder="Enter amount" name="amount" th:field="*{amount}"/></td>
+                    <td><input type="file" class="form-control" name="fileUpload" accept="application/pdf"
+                               th:field="*{uploadFile.tempFile}"/></td>
                     <td colspan="2"><input type="submit" id="addButton" class="button" value="Add"/></td>
                 </tr>
                 </tbody>
             </table>
+        </form>
+        <hr/>
+    </div>
+    <section th:replace="Layouts/TransactionDetailsLayout::user-transaction-content">Custom content</section>
+    <div id="display-total" style="text-align:center;font-weight: bold;font-size: 20px;">
+        <hr/>
+        <h4 style="color: #ffffff;">Total Expenditure for the current month:
+            <span id="total-sum" th:text="${totalExpenseObj}" th:style="${totalExpenseObj} > 0 ?
+            'color:green' : 'color:red'"/>
+        </h4>
+        <hr/>
+    </div>
+    <div th:if="${isAdmin and reportsPage}">
+        <form id="download-reports-form" th:action="@{/downloadReport}" th:object="${reportObj}"
+              method="post">
+            <input type="submit" name="files" value="Download Report"/>
+            <input type="hidden" name="forMonth" th:field="*{selectMonth}" th:value="${selectMonth}" />
+            <input type="hidden" id="reportsType" th:field="*{reportsType}"/>
         </form>
     </div>
 </section>

@@ -5,61 +5,36 @@
 
     <title layout:title-pattern="$DECORATOR_TITLE - $CONTENT_TITLE">Login</title>
 
-    <script th:inline="javascript">
-    /*<![CDATA[*/
-        $(document).ready(function(){
-
-            $("#loginButton").prop('disabled', true);
-            $("form input").keyup(function() {
-
-                if($(this).val() != '') {
-                    $("#loginButton").prop('disabled', false);
-                } else {
-                    $("#loginButton").prop('disabled', true);
-                }
-            });
-
-            $("#loginButton").click(function(){
-                if( !isEmail($("#emailAddr").val())) {
-                    $(".error-message").show().html("Please Enter Valid Email Address");
-                } else {
-                    $("#loginForm").submit();
-                 }
-            });
-        });
-
-        function isEmail(email) {
-          var regex = /^([a-zA-Z0-9_.+-])+\@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$/;
-          return regex.test(email);
-        }
-/*]]>*/
-    </script>
-
+    <script th:src="@{/js/manageMyApartment.js}"></script>
 </head>
 <body>
 
 <section layout:fragment="custom-body-content">
-    <div class="container">
-        <h4 align="center">Login Form</h4>
+
+    <div class="login-card">
         <p th:text="${loginError}" class="error-message"> Error Message</p>
+        <h1>LOGIN</h1><br/>
 
-        <form id="loginForm" th:action="@{/login}" th:object="${userObj}" method="post" class="form-signin">
-
-            <label><b>Email Address</b></label>
-            <input type="text" class="form-control" placeholder="Enter Email Address" name="emailAddr"
-                   th:field="*{emailAddr}"
-                   required="true"/>
-            <label><b>Password</b></label>
-            <input type="password" class="form-control" placeholder="Enter Password" name="password"
-                   th:field="*{password}"
-                   required="true"/>
-
-            <input type="button" id="loginButton" class="btn btn-lg btn-primary btn-block" value="Login"/>
-            <input type="reset" id="ResetButton" class="btn btn-lg btn-primary btn-block" value="Reset"/>
-            <a href="#" th:href="@{/register}">New User? Register</a>
-            <div class="right"><a href="#" th:href="@{/resetPassword}">Reset Password</a></div>
+        <form id="loginForm" th:action="@{/login}" th:object="${userObj}" method="post">
+            <input type="text" placeholder="Email Address" name="emailAddr"
+                   th:field="*{emailAddr}" required="true"/>
+            <input type="password" placeholder="Password" name="password"
+                   th:field="*{password}" required="true"/>
+            <input type="submit" id="loginButton" class="login login-submit" value="Login"/>
         </form>
+        <div class="login-help">
+            <a href="#" th:href="@{/register}">Register</a> • <a href="#" th:href="@{/resetPassword}">Forgot Password</a>
+            <!--<a href="register.html" data-toggle="modal" data-target="#registerModal">Register</a>-->
+            <!--• <a href="#" th:href="@{/resetPassword}">Forgot Password</a>-->
+        </div>
     </div>
+
+    <!--<div class="modal fade" id="registerModal" role="dialog" style="display:none;">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content"/>
+        </div>
+    </div>-->
 </section>
+
 </body>
 </html>

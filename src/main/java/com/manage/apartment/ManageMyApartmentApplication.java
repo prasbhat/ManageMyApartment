@@ -12,6 +12,7 @@ import org.springframework.data.rest.webmvc.config.RepositoryRestMvcConfiguratio
 public class ManageMyApartmentApplication extends SpringBootServletInitializer {
 
     public static void main(String[] args) {
+
         SpringApplication.run(ManageMyApartmentApplication.class, args);
     }
 

@@ -2,48 +2,60 @@ package com.manage.apartment.controller;
 
 import com.manage.apartment.Util.ManageMyApartmentConstants;
 import com.manage.apartment.Util.ManageMyApartmentUtil;
+import com.manage.apartment.model.Reports;
 import com.manage.apartment.model.ResidentUsers;
-import com.manage.apartment.repository.UserRepository;
+import com.manage.apartment.model.UploadFile;
+import com.manage.apartment.service.UserService;
+import com.manage.apartment.validate.ResidentUserValidator;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.Pageable;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.sql.Timestamp;
 import java.text.MessageFormat;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
-import static com.manage.apartment.Util.ManageMyApartmentConstants.MODEL_USER_OBJ;
+import static com.manage.apartment.Util.ManageMyApartmentConstants.MODEL_LOGIN_USER;
+import static com.manage.apartment.Util.ManageMyApartmentConstants.MODEL_USER_OBJ_LIST;
 
 /**
  * Created by 212591727 on 3/24/2017.
  */
 @RestController
-@SessionAttributes(MODEL_USER_OBJ)
+@SessionAttributes({MODEL_LOGIN_USER, MODEL_USER_OBJ_LIST})
 public class UserController implements ManageMyApartmentConstants {
 
     private static final Logger LOGGER = Logger.getLogger(UserController.class);
-    @Autowired
-    UserRepository userDao;
-//    private static ValidatorFactory validatorFactory = Validation.buildDefaultValidatorFactory();
-//    private static Validator validator = validatorFactory.getValidator();
     private String className = this.getClass().getSimpleName();
-    @Value("${com.manage.apartment.default.password}")
-    private String defaultPassword;
 
-    @ModelAttribute(value = MODEL_USER_OBJ)
-    private ResidentUsers createUserObj() {
+//    @Autowired
+//    UserRepository userRepository;
+
+    @Autowired
+    UserService userService;
+
+    @Autowired
+    SuperAdminController auditTrailLog;
+
+    @Autowired
+    ResidentUserValidator residentUserValidator;
+
+    @Autowired
+    ManageMyApartmentUtil manageMyApartmentUtil;
+
+    @ModelAttribute(value = MODEL_LOGIN_USER)
+    private ResidentUsers createNewUserObj() {
         return new ResidentUsers();
     }
 
     @GetMapping(value = "/edit/{userId}")
-    public ModelAndView editUser(@PathVariable Integer userId, @ModelAttribute(value = MODEL_USER_OBJ) ResidentUsers userSessObj,
+    public ModelAndView editUser(@PathVariable Integer userId,
+                                 @ModelAttribute(value = MODEL_LOGIN_USER) ResidentUsers userSessObj,
                                  Model model) {
         String methodName = Thread.currentThread().getStackTrace()[1].getMethodName();
         LOGGER.info(MessageFormat.format(LOGGER_ENTRY, className, methodName));
@@ -51,7 +63,16 @@ public class UserController implements ManageMyApartmentConstants {
         ModelAndView mav = ManageMyApartmentUtil.isUserAuthenticated(userSessObj);
         if (null == mav) {
             ManageMyApartmentUtil.modelDataLoad(model);
-            mav = new ModelAndView(VIEW_UPDATE_USER, MODEL_UPDATE_USER_OBJ, userDao.findOne(userId));
+            model.addAttribute(MODEL_IS_SUPER_ADMIN, ManageMyApartmentUtil.isUserSuperAdmin(userSessObj));
+            model.addAttribute(MODEL_IS_ADMIN, ManageMyApartmentUtil.isUserAdmin(userSessObj));
+            if (userId == userSessObj.getSystemUserId()) {
+                model.addAttribute(MODEL_SAME_USER_EDIT, Boolean.TRUE);
+            } else {
+                model.addAttribute(MODEL_SAME_USER_EDIT, Boolean.FALSE);
+            }
+
+            ResidentUsers residentUsers = userService.findOneUser(userId);
+            mav = new ModelAndView(VIEW_UPDATE_USER, MODEL_UPDATE_USER_OBJ, residentUsers);
         }
 
         LOGGER.info(MessageFormat.format(LOGGER_EXIT, className, methodName));
@@ -59,56 +80,144 @@ public class UserController implements ManageMyApartmentConstants {
     }
 
     @GetMapping(value = "/getAllUsers")
-    public ModelAndView getAllUsers(@ModelAttribute(value = MODEL_USER_OBJ) ResidentUsers userSessObj, Pageable pageable) {
+    public ModelAndView getAllUsers(@RequestParam(value = REPORTS_PARAM) String requestParam,
+                                    @ModelAttribute(value = MODEL_LOGIN_USER) ResidentUsers userSessObj) {
         String methodName = Thread.currentThread().getStackTrace()[1].getMethodName();
         LOGGER.info(MessageFormat.format(LOGGER_ENTRY, className, methodName));
 
         ModelAndView mav = ManageMyApartmentUtil.isUserAuthenticated(userSessObj);
         if (null == mav) {
-            System.out.println(pageable.toString());
-            mav = new ModelAndView(VIEW_PROFILE_LIST, MODEL_USER_OBJ_LIST, userDao.findAll(pageable));
+            List<ResidentUsers> userDetailsList = userService.findAllUsers();
+            List<ResidentUsers> userList = new ArrayList<>();
+
+            if (ManageMyApartmentUtil.isUserSuperAdmin(userSessObj)) {
+                mav = new ModelAndView(VIEW_PROFILE_LIST, MODEL_USER_OBJ_LIST, userDetailsList);
+            }
+
+            for (ResidentUsers residentUsers : userDetailsList) {
+                if (!ManageMyApartmentUtil.isUserSuperAdmin(residentUsers) &&
+                        residentUsers.getAdditionalUserDetails().getIsActive()) {
+                    userList.add(residentUsers);
+                }
+           }
+
+            if (ManageMyApartmentUtil.isUserAdmin(userSessObj) &&
+                    !ManageMyApartmentUtil.isUserSuperAdmin(userSessObj)) {
+                mav = new ModelAndView(VIEW_PROFILE_LIST, MODEL_USER_OBJ_LIST, userList);
+            }
+
+            if (!ManageMyApartmentUtil.isUserAdmin(userSessObj)) {
+                mav = new ModelAndView(VIEW_PROFILE_LIST, MODEL_USER_OBJ_LIST,
+                        userService.findUsersByEmailAddress(userSessObj.getEmailAddr()));
+            }
+
+            mav.addObject(MODEL_IS_SUPER_ADMIN, ManageMyApartmentUtil.isUserSuperAdmin(userSessObj));
+            mav.addObject(MODEL_IS_ADMIN, ManageMyApartmentUtil.isUserAdmin(userSessObj));
+
+            if(requestParam.equals(Boolean.TRUE.toString())){
+                mav.addObject(REPORTS_PAGE, Boolean.TRUE);
+
+                Reports reports = new Reports();
+                reports.setReportsType(REPORT_TYPE.user.name());
+                mav.addObject(MODEL_REPORT_OBJ, reports);
+            } else {
+                mav.addObject(REPORTS_PAGE, Boolean.FALSE);
+            }
         }
 
         LOGGER.info(MessageFormat.format(LOGGER_EXIT, className, methodName));
         return mav;
     }
 
-    @PostMapping(value = "/createUser")
-    public ModelAndView createUser(@Valid @ModelAttribute(value = MODEL_USER_OBJ) ResidentUsers user,
-                                   BindingResult bindingResult, Model model) {
+    @GetMapping(value = "/register")
+    public ModelAndView registerUser(@ModelAttribute(value = MODEL_LOGIN_USER) ResidentUsers userSessObj,
+                                     Model model) {
         String methodName = Thread.currentThread().getStackTrace()[1].getMethodName();
         LOGGER.info(MessageFormat.format(LOGGER_ENTRY, className, methodName));
 
-        MVController mvController = new MVController();
-        ModelAndView mav = mvController.registerUser(model);
+        ManageMyApartmentUtil.modelDataLoad(model);
+        ModelAndView mav = new ModelAndView(VIEW_REGISTER_USER, MODEL_USER_OBJ, new ResidentUsers());
 
+        if (userSessObj.getSystemUserId() == 0) {
+            mav.addObject(MODEL_IS_SUPER_ADMIN, Boolean.FALSE);
+            mav.addObject(MODEL_IS_ADMIN, Boolean.FALSE);
+        } else {
+            mav.addObject(MODEL_IS_SUPER_ADMIN, ManageMyApartmentUtil.isUserSuperAdmin(userSessObj));
+            mav.addObject(MODEL_IS_ADMIN, ManageMyApartmentUtil.isUserAdmin(userSessObj));
+        }
+
+        LOGGER.info(MessageFormat.format(LOGGER_EXIT, className, methodName));
+        return mav;
+    }
+
+    @GetMapping(value = "/createUser")
+    public ModelAndView invalidCreateUser(@ModelAttribute(value = MODEL_LOGIN_USER) ResidentUsers userSessObj) {
+        String methodName = Thread.currentThread().getStackTrace()[1].getMethodName();
+        LOGGER.info(MessageFormat.format(LOGGER_ENTRY, className, methodName));
+        ModelAndView mav = ManageMyApartmentUtil.isUserAuthenticated(userSessObj);
+        LOGGER.info(MessageFormat.format(LOGGER_EXIT, className, methodName));
+        return mav;
+    }
+
+    @GetMapping(value = "/updateUser")
+    public ModelAndView invalidUpdateUser(@ModelAttribute(value = MODEL_LOGIN_USER) ResidentUsers userSessObj) {
+        String methodName = Thread.currentThread().getStackTrace()[1].getMethodName();
+        LOGGER.info(MessageFormat.format(LOGGER_ENTRY, className, methodName));
+        ModelAndView mav = ManageMyApartmentUtil.isUserAuthenticated(userSessObj);
+        LOGGER.info(MessageFormat.format(LOGGER_EXIT, className, methodName));
+        return mav;
+    }
+
+    @PostMapping(value = "/createUser")
+    public ModelAndView createUser(@Valid @ModelAttribute(value = MODEL_USER_OBJ) ResidentUsers registeringUser,
+                                   BindingResult bindingResult, Model model, HttpServletRequest request) {
+        String methodName = Thread.currentThread().getStackTrace()[1].getMethodName();
+        LOGGER.info(MessageFormat.format(LOGGER_ENTRY, className, methodName));
+
+        ManageMyApartmentUtil.modelDataLoad(model);
+        ResidentUsers loggedInUser = (ResidentUsers) request.getSession().getAttribute(MODEL_LOGIN_USER);
+
+        if (loggedInUser.getSystemUserId() == 0) {
+            model.addAttribute(MODEL_IS_SUPER_ADMIN, Boolean.FALSE);
+            model.addAttribute(MODEL_IS_ADMIN, Boolean.FALSE);
+        } else {
+            model.addAttribute(MODEL_IS_SUPER_ADMIN, ManageMyApartmentUtil.isUserSuperAdmin(loggedInUser));
+            model.addAttribute(MODEL_IS_ADMIN, ManageMyApartmentUtil.isUserAdmin(loggedInUser));
+        }
+
+        ModelAndView mav = registerUser(loggedInUser, model);
         Map<String, String> bindErrorsMap = new HashMap<>();
 
         if (ManageMyApartmentUtil.hasBindingErrors(bindingResult, model)) {
             return mav;
         }
 
-        ResidentUsers userDbObj = userDao.findByEmailAddr(user.getEmailAddr());
-        if (null == userDbObj) {
-            try {
-                user = prepareUserObject(user);
-                userDao.save(user);
-            } catch (Exception ex) {
-                bindErrorsMap.put(KEY_ERRORS, ex.toString());
+        List<ResidentUsers> userDbObj = userService.findByEmailAddrOrFlatNumberAndAdditionalUserDetails_IsActive(
+                registeringUser.getEmailAddr(), registeringUser.getFlatNumber());
+
+        if (0 == userDbObj.size()) {
+            bindErrorsMap = residentUserValidator.residentUserValidation(registeringUser, CREATE);
+
+            if (bindErrorsMap.size() == 0) {
+                registeringUser = prepareUserObject(registeringUser);
+                userService.createUser(registeringUser);
+            } else {
+                mav = new ModelAndView(VIEW_REGISTER_USER, MODEL_USER_OBJ, registeringUser);
             }
         } else {
             bindErrorsMap.put(KEY_ERRORS, INVALID_USER_EXISTS);
+            mav = new ModelAndView(VIEW_REGISTER_USER, MODEL_USER_OBJ, registeringUser);
         }
 
-        displaySuccessMessage(bindErrorsMap, user.getEmailAddr(), CREATED, model);
+        displaySuccessMessage(bindErrorsMap, registeringUser.getEmailAddr(), CREATE, model, registeringUser);
 
         LOGGER.info(MessageFormat.format(LOGGER_EXIT, className, methodName));
         return mav;
     }
 
-    @PostMapping(value = "/updateUser")
+    @PutMapping(value = "/updateUser")
     public ModelAndView updateUser(@Valid @ModelAttribute(value = MODEL_UPDATE_USER_OBJ) ResidentUsers userObjData,
-                                   BindingResult bindingResult, Model model) {
+                                   BindingResult bindingResult, Model model, HttpServletRequest request) {
         String methodName = Thread.currentThread().getStackTrace()[1].getMethodName();
         LOGGER.info(MessageFormat.format(LOGGER_ENTRY, className, methodName));
 
@@ -117,24 +226,53 @@ public class UserController implements ManageMyApartmentConstants {
         ManageMyApartmentUtil.modelDataLoad(model);
         ModelAndView mav = editUser(userObjData.getSystemUserId(), userObjData, model);
 
+        ResidentUsers loggedInUser = (ResidentUsers) request.getSession().getAttribute(MODEL_LOGIN_USER);
+
+        if (loggedInUser.getSystemUserId() == 0) {
+            model.addAttribute(MODEL_IS_SUPER_ADMIN, Boolean.FALSE);
+            model.addAttribute(MODEL_IS_ADMIN, Boolean.FALSE);
+        } else {
+            model.addAttribute(MODEL_IS_SUPER_ADMIN, ManageMyApartmentUtil.isUserSuperAdmin(loggedInUser));
+            model.addAttribute(MODEL_IS_ADMIN, ManageMyApartmentUtil.isUserAdmin(loggedInUser));
+        }
+
         if (ManageMyApartmentUtil.hasBindingErrors(bindingResult, model)) {
             return mav;
         }
 
-        ResidentUsers userDbObj = userDao.findOne(userObjData.getSystemUserId());
+        ResidentUsers userDbObj = userService.findOneUser(userObjData.getSystemUserId());
         if (null != userDbObj) {
             try {
-                userDao.save(userObjData);
+                bindErrorsMap = residentUserValidator.residentUserValidation(userObjData, UPDATE);
+
+                if (bindErrorsMap.size() == 0) {
+                    UploadFile uploadFile = userObjData.getAdditionalUserDetails().getUploadFile();
+
+                    if (null == uploadFile) {
+                        uploadFile = userDbObj.getAdditionalUserDetails().getUploadFile();
+                        uploadFile.setUpdationDate(new Timestamp(System.currentTimeMillis()));
+                    } else {
+                        uploadFile = ManageMyApartmentUtil.uploadFileDetails(userObjData.getAdditionalUserDetails()
+                                .getUploadFile(), DOC_UPLOAD_TYPE.user.name());
+                    }
+
+                    userObjData.getAdditionalUserDetails().setUploadFile(uploadFile);
+
+                    userObjData.setCreationDate(userDbObj.getCreationDate());
+                    userObjData.setUpdationDate(new Timestamp(System.currentTimeMillis()));
+                    userService.createUser(userObjData);
+                } else {
+                    mav = new ModelAndView(VIEW_UPDATE_USER, MODEL_UPDATE_USER_OBJ, userObjData);
+                }
             } catch (Exception ex) {
-                bindErrorsMap.put(KEY_ERRORS, ex.toString());
+                bindErrorsMap.put(KEY_ERRORS, ex.getLocalizedMessage());
             }
         } else {
             bindErrorsMap.put(KEY_ERRORS, INVALID_USER);
+            mav = new ModelAndView(VIEW_UPDATE_USER, MODEL_UPDATE_USER_OBJ, userObjData);
         }
 
-        displaySuccessMessage(bindErrorsMap, userObjData.getEmailAddr(), UPDATED, model);
-
-        model.addAttribute(MODEL_BIND_ERRORS, bindErrorsMap);
+        displaySuccessMessage(bindErrorsMap, userObjData.getEmailAddr(), UPDATE, model, userObjData);
 
         LOGGER.info(MessageFormat.format(LOGGER_EXIT, className, methodName));
 
@@ -142,51 +280,69 @@ public class UserController implements ManageMyApartmentConstants {
     }
 
     @GetMapping(value = "/deleteUser/{userId}")
-    public ModelAndView deleteUser(@PathVariable int userId, @ModelAttribute(value = MODEL_USER_OBJ) ResidentUsers userSessObj,
-                                   Model model, Pageable pageable) {
+    public ModelAndView deleteUser(@PathVariable int userId, @ModelAttribute(value = MODEL_LOGIN_USER)
+            ResidentUsers userSessObj, Model model) {
         String methodName = Thread.currentThread().getStackTrace()[1].getMethodName();
         LOGGER.info(MessageFormat.format(LOGGER_ENTRY, className, methodName));
 
         Map<String, String> bindErrorsMap = new HashMap<>();
 
         ModelAndView mav = ManageMyApartmentUtil.isUserAuthenticated(userSessObj);
+        ResidentUsers userDetails = userService.findOneUser(userId);
         if (null == mav) {
             try {
-                userDao.delete(userId);
+                userDetails.getAdditionalUserDetails().setIsActive(Boolean.FALSE);
+                userService.createUser(userDetails);
             } catch (Exception ex) {
                 bindErrorsMap.put(KEY_ERRORS, ex.toString());
             }
 
-            displaySuccessMessage(bindErrorsMap, USER, DELETED, model);
+            displaySuccessMessage(bindErrorsMap, userDetails.getEmailAddr(), DELETE, model, userSessObj);
         }
 
         LOGGER.info(MessageFormat.format(LOGGER_EXIT, className, methodName));
-        return getAllUsers(userSessObj, pageable);
+        return getAllUsers(Boolean.FALSE.toString(), userSessObj);
     }
 
-    private ResidentUsers prepareUserObject(ResidentUsers newUserObj) {
+//    @RequestMapping(value = "/getpdf", method = RequestMethod.GET)
+//    public ResponseEntity<byte[]> viewPDF(@RequestParam(value = "userId") int userId) {
+//        String methodName = Thread.currentThread().getStackTrace()[1].getMethodName();
+//        LOGGER.info(MessageFormat.format(LOGGER_ENTRY, className, methodName));
+//
+//        ResidentUsers residentUsers = userService.findOneUser(userId);
+//
+//        ResponseEntity<byte[]> response = ManageMyApartmentUtil.retrieveFileDetails(residentUsers.
+//                getAdditionalUserDetails().getUploadFile());
+//        LOGGER.info(MessageFormat.format(LOGGER_EXIT, className, methodName));
+//        return response;
+//    }
+
+    private ResidentUsers prepareUserObject(ResidentUsers registeringUser) {
         String methodName = Thread.currentThread().getStackTrace()[1].getMethodName();
         LOGGER.info(MessageFormat.format(LOGGER_ENTRY, className, methodName));
 
-        String encryptPass;
+        UploadFile uploadFile = ManageMyApartmentUtil.uploadFileDetails(registeringUser.getAdditionalUserDetails().
+                getUploadFile(), DOC_UPLOAD_TYPE.user.name());
+        registeringUser.getAdditionalUserDetails().setUploadFile(uploadFile);
+        registeringUser.getAdditionalUserDetails().setUserRole(USER_ROLE.USER.toString());
+        registeringUser.getAdditionalUserDetails().setIsActive(Boolean.TRUE);
 
-        if (newUserObj.getFlatNumber() == 0) {
-            newUserObj.setUserRole(USER_ROLE.ADMIN.toString());
-            encryptPass = ManageMyApartmentUtil.cryptWithMD5(USER_ROLE.ADMIN.toString().toLowerCase());
-        } else {
-            newUserObj.setUserRole(USER_ROLE.USER.toString());
-            encryptPass = ManageMyApartmentUtil.cryptWithMD5(defaultPassword);
-        }
-        newUserObj.setPassword(encryptPass);
-        newUserObj.setIsActive(Boolean.TRUE);
+        registeringUser.setPassword(ManageMyApartmentUtil.cryptWithMD5(registeringUser.getPassword()));
+        registeringUser.setCreationDate(new Timestamp(System.currentTimeMillis()));
+        registeringUser.setUpdationDate(new Timestamp(System.currentTimeMillis()));
 
         LOGGER.info(MessageFormat.format(LOGGER_EXIT, className, methodName));
-        return newUserObj;
+        return registeringUser;
     }
 
-    private void displaySuccessMessage(Map<String, String> bindErrorsMap, String emailAddress, String label, Model model) {
+    private void displaySuccessMessage(Map<String, String> bindErrorsMap, String emailAddress, String label,
+                                       Model model,
+                                       @ModelAttribute(value = MODEL_LOGIN_USER) ResidentUsers loggedInUser) {
         if (bindErrorsMap.size() == 0) {
             bindErrorsMap.put(KEY_SUCCESS, MessageFormat.format(SUCCESS_MSG, emailAddress, label));
+            auditTrailLog.recordAuditTrailLog(RESIDENT_USERS, loggedInUser.getEmailAddr(),
+                    MessageFormat.format(SUCCESS_MSG, emailAddress, label), USER + "_" + label,
+                    new Timestamp(System.currentTimeMillis()));
         }
 
         model.addAttribute(MODEL_BIND_ERRORS, bindErrorsMap);
@@ -195,32 +351,67 @@ public class UserController implements ManageMyApartmentConstants {
     public void addPendingAmount(float defaultMaintAmount) {
         String methodName = Thread.currentThread().getStackTrace()[1].getMethodName();
         LOGGER.info(MessageFormat.format(LOGGER_ENTRY, className, methodName));
-        List<ResidentUsers> fullUserObj = (List<ResidentUsers>) userDao.findAll();
+        List<ResidentUsers> fullUserObj = userService.findAllUsers();
         for (ResidentUsers residentUser : fullUserObj) {
             if (residentUser.getFlatNumber() != 0) {
-                float pendingAmount = residentUser.getPendingAmount();
-                pendingAmount += defaultMaintAmount;
+                int pendingAmount = residentUser.getPendingAmount();
+                if (residentUser.getAdditionalUserDetails().getIsActive()) {
+                    pendingAmount += defaultMaintAmount;
+                } else {
+                    pendingAmount += DEFAULT_AMOUNT;
+                }
                 residentUser.setPendingAmount(pendingAmount);
-                userDao.save(residentUser);
+                userService.createUser(residentUser);
             }
         }
         LOGGER.info(MessageFormat.format(LOGGER_EXIT, className, methodName));
     }
 
-    public void updatePendingAmount(int transFlatNumber, float maintAmount) {
+    public void updatePendingAmount(int transFlatNumber, float maintAmount, boolean deduct) {
         String methodName = Thread.currentThread().getStackTrace()[1].getMethodName();
         LOGGER.info(MessageFormat.format(LOGGER_ENTRY, className, methodName));
-        List<ResidentUsers> residentUsersList = userDao.findByFlatNumber(transFlatNumber);
-        for (ResidentUsers residentUser : residentUsersList) {
-            float pendingAmount = residentUser.getPendingAmount();
-            pendingAmount -= maintAmount;
-            if (pendingAmount < 0) {
-                pendingAmount = 0;
-            }
+        List<ResidentUsers> residentUsersList;
+        if (transFlatNumber == 0) {
+            residentUsersList = userService.findAllUsers();
+        } else {
+            residentUsersList = userService.findUsersByFlatNumber(transFlatNumber);
+        }
 
-            residentUser.setPendingAmount(pendingAmount);
-            userDao.save(residentUser);
+        for (ResidentUsers residentUser : residentUsersList) {
+            if (residentUser.getFlatNumber() != 0 && residentUser.getAdditionalUserDetails().getIsActive()) {
+                int pendingAmount = residentUser.getPendingAmount();
+                if (deduct) {
+                    pendingAmount -= maintAmount;
+                } else {
+                    pendingAmount += maintAmount;
+                }
+
+               residentUser.setPendingAmount(pendingAmount);
+                userService.createUser(residentUser);
+            }
         }
         LOGGER.info(MessageFormat.format(LOGGER_EXIT, className, methodName));
+    }
+
+    public int getNoOfFlats(String currMonth) {
+        String methodName = Thread.currentThread().getStackTrace()[1].getMethodName();
+        LOGGER.info(MessageFormat.format(LOGGER_ENTRY, className, methodName));
+        int noOfFlats = 0;
+
+        List<ResidentUsers> residentUsersList = userService.findAllUsers();
+
+        Date currMonthYear = ManageMyApartmentUtil.getFormattedDate(currMonth.concat("-01"));
+
+        for (ResidentUsers residentUsers : residentUsersList) {
+            Date residingSince = ManageMyApartmentUtil.getFormattedDate(residentUsers.getResidingSince());
+
+            if (residingSince.before(currMonthYear) && residentUsers.getAdditionalUserDetails().getIsActive()
+                    && !residentUsers.getAdditionalUserDetails().getUserRole().equals(USER_ROLE.SUPER_ADMIN.name())) {
+                noOfFlats++;
+            }
+        }
+
+        LOGGER.info(MessageFormat.format(LOGGER_EXIT, className, methodName));
+        return noOfFlats;
     }
 }

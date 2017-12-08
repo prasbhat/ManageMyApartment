@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorator="Layouts/BaseLayout" xmlns:dt="http://www.thymeleaf.org/dandelion/datatables">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Resident's  Vehicle Details</title>
+    <script th:inline="javascript">
+    /*<![CDATA[*/
+        $(document).ready(function(){
+            $("#add-vehicle-row").click(function(){
+                $("#add_row_table").toggle();
+            });
+        });
+    /*]]>*/
+
+
+    </script>
+
+</head>
+<body>
+<section th:fragment="user-vehicle-details">
+    <a href="#" id="add-vehicle-row">Add New Vehicle Details</a>
+
+    <div id="add_row_table" style="display:none;">
+        <form id="addRowForm" th:action="@{/addVehicleDetails}" th:object="${newVehicleObj}" method="post">
+            <table id="AddRowTable" class="table table-striped">
+                <thead class="floral-background">
+                <tr>
+                    <th>Vehicle Type</th>
+                    <th>Vehicle Model</th>
+                    <th>Registration Number</th>
+                    <th colspan="2">Add</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>
+                        <select th:field="*{vehicleType}">
+                            <option th:each="vehicleType : ${vehicleTypeList}"
+                                    th:value="${vehicleType}"
+                                    th:text="${vehicleType}">TWO_WHEELER
+                            </option>
+                        </select>
+                    </td>
+                    <td><input type="text" placeholder="Enter Vehicle Model" name="vehicleModel"
+                               th:field="*{vehicleModel}"/></td>
+                    <td><input type="text" placeholder="Enter Registration Number" name="registrationNumber"
+                               th:field="*{registrationNumber}"/></td>
+                    <td colspan="2"><input type="submit" id="addButton" class="button" value="Add"/></td>
+                </tr>
+                </tbody>
+            </table>
+        </form>
+        <hr/>
+    </div>
+
+    <div id="transaction-details" th:if="${vehicleSummaryList != null}" align="center">
+        <table id="tableCurrent" class="table table-striped" dt:table="true">
+            <thead class="floral-background">
+            <tr>
+                <th>Vehicle Type</th>
+                <th>Vehicle Model</th>
+                <th>Registration Number</th>
+                <th>Delete</th>
+            </tr>
+            </thead>
+            <tbody id="employee_data_body">
+            <tr th:each="vehicleSummary : ${vehicleSummaryList}">
+                <td th:text="${vehicleSummary.vehicleType}"/>
+                <td th:text="${vehicleSummary.vehicleModel}"/>
+                <td th:text="${vehicleSummary.registrationNumber}"/>
+                <td>
+                    <a href="#">Delete</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</section>
+</body>
+</html>

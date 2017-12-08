@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorator="Layouts/MenuLayout" xmlns:dt="http://www.thymeleaf.org/dandelion/datatables">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Complaints and Feedback page</title>
+    <script th:inline="javascript">
+    /*<![CDATA[*/
+        $(document).ready(function(){
+            $("#add-row").click(function(){
+                $("#add_row_table").toggle();
+            });
+        });
+    /*]]>*/
+
+
+    </script>
+
+</head>
+<body>
+<section layout:fragment="custom-main-content">
+    <p th:text="${successMsg}" class="error-message"> success message</p>
+    <form id="complaintsForm" th:action="@{/addEditFeedback}" th:object="${feedbackObj}" method="post"
+          class="form-register" th:if="${!isAdmin}">
+        <table class="table table-striped">
+            <tr>
+                <td><label>Complaints &amp; Feedback </label>
+                    <textarea class="form-control" placeholder="Give your valuable feedback"
+                              name="complaintText" th:field="*{complaintText}"></textarea>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <button type="reset" class="login login-submit">Reset</button>
+                    <input type="submit" id="registerButton" class="login login-submit" value="Submit"/>
+                </td>
+            </tr>
+        </table>
+    </form>
+
+    <div th:if="${complaintsObjList != null}" align="center">
+        <h4>Feedback Details</h4>
+        <table id="tableDiv" class="table table-striped" dt:table="true">
+            <thead>
+            <tr>
+                <th>Feedback Id</th>
+                <th>Flat Number</th>
+                <th>Username</th>
+                <th>Feedback Text</th>
+                <!--<th>Closure Comments</th>-->
+                <!--<th>Status</th>-->
+                <!--<th th:if="${isAdmin}">Edit</th>-->
+            </tr>
+            </thead>
+            <tbody id="employee_data_body">
+            <tr th:each="complaintsObj : ${complaintsObjList}">
+                <td th:text="${complaintsObj.complaintId}"/>
+                <td th:text="${complaintsObj.flatNumber}"/>
+                <td th:text="${complaintsObj.username}"/>
+                <td th:text="${complaintsObj.complaintText}"/>
+                <!--<td th:text="${complaintsObj.closureComments}"/>-->
+                <!--<td th:text="${complaintsObj.status}"/>-->
+                <!--<td th:if="${isAdmin}">-->
+                    <!--<a th:href="'#'+${complaintsObj.systemComplaintsId}" data-toggle="modal">Edit</a>-->
+
+                    <!--&lt;!&ndash; Modal Section &ndash;&gt;-->
+                    <!--<div class="modal fade" th:id="${complaintsObj.systemComplaintsId}" aria-labelledby="edit"-->
+                         <!--role="dialog" aria-hidden="true">-->
+                        <!--<div class="modal-dialog modal-lg">-->
+                            <!--<div class="modal-content">-->
+                                <!--<div class="modal-header">-->
+                                    <!--<table width="100%">-->
+                                        <!--<tr>-->
+                                            <!--<td><h4 align="center">FEEDBACK</h4></td>-->
+                                            <!--<td>-->
+                                                <!--<button type="button" class="close" data-dismiss="modal"-->
+                                                        <!--aria-hidden="true">&times;-->
+                                                <!--</button>-->
+                                            <!--</td>-->
+                                        <!--</tr>-->
+                                    <!--</table>-->
+                                <!--</div>-->
+                                <!--<div class="modal-body">-->
+                                    <!--<form id="updateComplaintFormModal" th:action="@{/addEditFeedback}"-->
+                                          <!--th:object="${feedbackObj}" th:method="post" class="form-register" style="background-color: #fcf8e3;">-->
+                                    <!--<table id="tableModal" class="table table-bordered table-striped">-->
+                                        <!--<tr>-->
+                                            <!--<th>Complaint Id</th>-->
+                                            <!--<td th:text="${complaintsObj.complaintId}" th:field="*{complaintId}"/>-->
+                                            <!--<th>Flat Number</th>-->
+                                            <!--<td th:text="${complaintsObj.flatNumber}" th:field="*{flatNumber}"/>-->
+                                        <!--</tr>-->
+                                        <!--<tr>-->
+                                            <!--<th>Username</th>-->
+                                            <!--<td th:text="${complaintsObj.username}" th:field="*{username}"/>-->
+                                            <!--<th>Complaint Text</th>-->
+                                            <!--<td th:text="${complaintsObj.complaintText}" th:field="*{complaintText}"/>-->
+                                        <!--</tr>-->
+                                        <!--<tr>-->
+                                            <!--<th>Closure Comments</th>-->
+                                            <!--<td>-->
+                                                <!--<textarea class="form-control" placeholder="Enter Closure Comments"-->
+                                                          <!--name="closureComments" th:field="*{closureComments}"></textarea>-->
+                                            <!--</td>-->
+                                            <!--<th>Status</th>-->
+                                            <!--<td>-->
+                                                <!--<select th:field="*{status}" class="form-control">-->
+                                                    <!--<option th:each="ticketStatus : ${ticketStatusList}"-->
+                                                            <!--th:value="${ticketStatus}"-->
+                                                            <!--th:text="${ticketStatus}">OPEN-->
+                                                    <!--</option>-->
+                                                <!--</select>-->
+                                            <!--</td>-->
+                                        <!--</tr>-->
+                                        <!--<tr>-->
+                                            <!--<td></td>-->
+                                            <!--<td colspan="2">-->
+                                                <!--<input type="submit" id="updateButton"-->
+                                                       <!--class="btn btn-lg btn-primary btn-block" value="Update"/>-->
+                                            <!--</td>-->
+                                            <!--<td></td>-->
+                                        <!--</tr>-->
+                                    <!--</table>-->
+                                        <!--<input type="hidden" name="systemComplaintsId"-->
+                                               <!--th:field="*{systemComplaintsId}"/>-->
+                                    <!--</form>-->
+                                <!--</div>-->
+                            <!--</div>-->
+                        <!--</div>-->
+                    <!--</div>-->
+                <!--</td>-->
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</section>
+</body>
+</html>

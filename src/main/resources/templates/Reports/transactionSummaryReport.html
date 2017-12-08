@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <link rel="stylesheet" type="text/css" href="../bootstrap-3.3.7/css/bootstrap.min.css"/>
+    <link rel="stylesheet" type="text/css" href="../css/manage-my-apartment.css"/>
+</head>
+<body>
+<h2 th:text="${mainTitleText}"></h2>
+<h5 th:text="${regDtlText}"></h5>
+<h6 th:text="${addrText}"></h6>
+<hr/>
+<h3 align="center">Transaction Details Reports (<span th:text="${titleText}" />)</h3>
+<table id="tableDiv" class="table table-striped" border="1">
+    <thead class="floral-background">
+    <tr>
+        <th>Date</th>
+        <th>Description</th>
+        <th>Flat Number</th>
+        <th>Transaction Type</th>
+        <th>Mode of Payment</th>
+        <th>Amount</th>
+        <th>Uploaded Receipt</th>
+    </tr>
+    </thead>
+    <tbody id="employee_data_body2">
+    <tr th:each="transactionSummary : ${objDataList}">
+        <td th:text="${transactionSummary.date}"/>
+        <td th:text="${transactionSummary.description}"/>
+        <td th:text="${transactionSummary.flatNumber}"/>
+        <td th:text="${transactionSummary.expenseType}"/>
+        <td th:text="${transactionSummary.modeOfPayment}"/>
+        <td th:text="${transactionSummary.amount}"/>
+        <td th:if="${transactionSummary.uploadFile == null}">
+            NA
+        </td>
+        <td th:if="${transactionSummary.uploadFile != null}">
+            <span th:text="${transactionSummary.uploadFile.filename}"></span>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+<h4>Total Expenditure for the current month: <span th:text="${totalExpenseObj}"></span></h4>
+<h6>NOTE: Flat number '0' means Association transaction</h6>
+</body>
+</html>

@@ -3,35 +3,83 @@
       layout:decorator="Layouts/BaseLayout">
 <head>
     <title layout:title-pattern="$DECORATOR_TITLE - $CONTENT_TITLE">Update User</title>
+    <script th:src="@{/js/manageMyApartment.js}"></script>
 
 </head>
 <body>
 <section layout:fragment="custom-body-content">
     <div class="container">
 
-        <h4 align="center">Update Resident Details</h4>
-
-        <form id="updateUserForm" th:action="@{/updateUser}" th:object="${updateUserObj}" method="post" class="form-signin">
+        <form id="updateUserForm" th:action="@{/updateUser}" th:object="${updateUserObj}" th:method="put"
+              class="form-register"
+              enctype="multipart/form-data" style="background-color: #fcf8e3;">
+            <h3 align="center">UPDATE USER/RESIDENTS DETAILS</h3>
             <section th:replace="Layouts/RegisterUserLayout::register-new-user"></section>
-            <label>User Role</label>
-            <select th:field="*{userRole}" class="form-control">
-                <option th:each="userRole : ${userRoleList}"
-                        th:value="${userRole}"
-                        th:text="${userRole}">User
-                </option>
-            </select>
-            <label>Is Active</label>
-            <select th:field="*{isActive}" class="form-control">
-                <option th:each="isActive : ${isActiveList}"
-                        th:value="${isActive}"
-                        th:text="${isActive}">TRUE
-                </option>
-            </select>
+
+            <table class="table table-striped">
+                <tr>
+                    <span th:if="${isAdmin}">
+                        <td><label>Pending Amount (&#8377;)</label></td>
+                        <td><input type="text" class="form-control" placeholder="Enter Pending Amount"
+                                   name="pendingAmount"
+                                   th:field="*{pendingAmount}"/></td>
+                    </span>
+                    <span th:if="${!isSuperAdmin and sameUserEdit}">
+                        <td><label>Upload Id Proof (Upto 5MB &amp; Only .pdf)<span
+                                class="required">*</span></label></td>
+                        <td>
+                            <input type="file" class="form-control" name="fileUpload" accept="application/pdf"
+                                   th:field="*{additionalUserDetails.uploadFile.tempFile}"/>
+                            <!-- Previously uploaded files -->
+                             <a href="#" th:href="@{/getPdf(systemId=${updateUserObj.systemUserId},
+                                 docType=${updateUserObj.additionalUserDetails.uploadFile.docUploadType})}">
+                                <span th:text="${updateUserObj.additionalUserDetails.uploadFile.filename}"></span>
+                            </a>
+                        </td>
+                    </span>
+                    <span th:if="${isSuperAdmin}">
+                        <td colspan="2"></td>
+                    </span>
+                </tr>
+                <tr th:if="${isSuperAdmin}">
+                    <td><label>User Role</label></td>
+                    <td><select th:field="*{additionalUserDetails.userRole}" class="form-control">
+                        <option th:each="userRole : ${userRoleList}"
+                                th:value="${userRole}"
+                                th:text="${userRole}">User
+                        </option>
+                    </select></td>
+                    <td><label>Is Active</label></td>
+                    <td><select th:field="*{additionalUserDetails.isActive}" class="form-control">
+                        <option th:each="isActive : ${isActiveList}"
+                                th:value="${isActive}"
+                                th:text="${isActive}">TRUE
+                        </option>
+                    </select></td>
+                </tr>
+            </table>
+
+            <!--<a href="#" id="add-row">Click here to enter the Vehicle Details</a><br/>-->
+            <!--<span id="VehicleDetailsSection" style="display:none;">-->
+            <!--<section th:replace="vehicleDetails::user-vehicle-details"></section>-->
+            <!--</span>-->
+
+            <table style="width:100%">
+                <tr align="center">
+                    <td><input type="submit" id="updateButton" class="btn btn-lg btn-primary btn-block"
+                               value="Update"/></td>
+                </tr>
+                <tr>
+                    <td><a href="#" th:href="@{/getAllUsers(reports='false')}">Click here to go back</a></td>
+                </tr>
+            </table>
+            <span th:if="${!isSuperAdmin}">
+                <input type="hidden" name="userRole" th:field="*{additionalUserDetails.userRole}"/>
+                <input type="hidden" name="isActive" th:field="*{additionalUserDetails.isActive}"/>
+            </span>
             <input type="hidden" name="password" th:field="*{password}"/>
             <input type="hidden" name="systemUserId" th:field="*{systemUserId}"/>
 
-            <input type="submit" id="updateButton" class="btn btn-lg btn-primary btn-block" value="Update"/>
-            <a href="#" th:href="@{/}">Click here to go back</a><br/>
         </form>
 
     </div>

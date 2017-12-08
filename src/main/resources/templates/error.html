@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorator="Layouts/BaseLayout">
+<head>
+    <title>Error page</title>
+ </head>
+<body>
+<section layout:fragment="custom-body-content">
+    <h1>Default ManageMyApartment Error Page</h1>
+    <p th:if="${url}">
+        <b>Page:</b> <span th:text="${url}">Page URL</span>
+    </p>
+    <p th:if="${timestamp}" id='created'>
+        <b>Occurred:</b> <span th:text="${timestamp}">Timestamp</span>
+    </p>
+    <p th:if="${status}">
+        <b>Response Status:</b> <span th:text="${status}">status-code</span> <span
+            th:if="${error}" th:text="'('+${error}+')'">error ...</span>
+    </p>
+    <div  th:if="${exception}">
+        <b>Cause:</b> <span th:text="${exception}">exception ...</span>
+    </div>
+
+    <div th:utext="${fullReport}" />
+
+     <a href="login.html" th:href="@{/login}">Back to Home Page</a>
+</section>
+</body>
+</html>

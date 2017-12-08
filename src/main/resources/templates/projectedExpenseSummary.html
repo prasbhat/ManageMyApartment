@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorator="Layouts/MenuLayout" xmlns:dt="http://www.thymeleaf.org/dandelion/datatables">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Projected Expense Summary</title>
+    <script th:src="@{/js/manageMyApartment.js}"></script>
+</head>
+<body>
+<section layout:fragment="custom-main-content">
+    <div class="error-message" th:if="${bindErrors != null}">
+        <div th:each="err : ${bindErrors}">
+            <span th:text="${err.key}"></span>&nbsp;<span th:text="${err.value}"></span>
+        </div>
+    </div>
+
+    <div>
+        <h6 style="color:green;" th:if="${isAdmin}">
+            <i>Adding of projected expense allowed only for first 5 days of every month</i>
+        </h6>
+        <span th:if="${(isAdmin and isProjectedAllowed) or isSuperAdmin}">
+            <a href="#" id="add-row">Add New Projected Expense</a>
+        </span>
+        <span class="right"><a href="#" id="history-details">View History</a>
+            <a href="#" id="current-link-details" style="display:none;">View Current</a>
+        </span>
+    </div>
+
+    <div id="add_row_table" style="display:none;">
+        <form id="projectedExpenseSummaryForm" class="form-inline" th:action="@{/prjExpSummAdd}"
+              th:object="${prjExpSummObj}" method="post">
+            <table id="AddRowTable" class="table table-striped">
+                <thead class="floral-background">
+                <tr>
+                    <th>Description</th>
+                    <th>Amount(&#8377;)</th>
+                    <th>Month/Year</th>
+                    <th>Add</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>
+                        <input type="text" placeholder="Enter Description" name="prjExpSummDesc"
+                               th:field="*{prjExpSummDesc}"/>
+                    </td>
+                    <td>
+                        <input type="text" placeholder="Enter Amount" name="prjExpSummAmt" th:field="*{prjExpSummAmt}"/>
+                    </td>
+                    <td>
+                        <input type="month" placeholder="Enter Month" name="prjExpSummPrd" th:field="*{prjExpSummMthYr}"
+                               required="true"/>
+                    </td>
+                    <td colspan="2"><input type="submit" id="addButton" class="button" value="Add"/></td>
+                </tr>
+                </tbody>
+            </table>
+
+            <hr/>
+        </form>
+    </div>
+
+    <div align="center" id="section-details">
+        <h4 align="center">Projected Expense Summary Details
+            Month of <span th:text="${currYearMonth}"/></h4>
+        <table id="tableDiv" class="table table-striped" dt:table="true">
+            <thead class="floral-background">
+            <tr>
+                <th>Description</th>
+                <th>Amount (&#8377;)</th>
+                <th th:if="${(isAdmin and isProjectedAllowed) or isSuperAdmin and !reportsPage}">Delete</th>
+            </tr>
+            </thead>
+            <tbody id="employee_data_body">
+            <tr th:each="prjExpSummObj : ${prjExpSummObjList}">
+                <td th:text="${prjExpSummObj.prjExpSummDesc}"/>
+                <td th:text="${prjExpSummObj.prjExpSummAmt}"/>
+                <td th:if="${(isAdmin and isProjectedAllowed) or isSuperAdmin and !reportsPage}">
+                    <a href="#"
+                       th:href="@{/prjExpSummDel/{prjExpSummId}/(prjExpSummId=${prjExpSummObj.systemPrjExpSummId})}">
+                        Delete</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+        <form id="calculateExpense-form" th:action="@{/calculateExpense}" method="get" th:if="${isAdmin and !reportsPage}">
+            <input type="submit" id="editButton" class="button" value="Calculate Expense"/>
+        </form>
+        <hr/>
+    </div>
+    <div id="display-total" style="text-align:center;font-weight: bold;font-size: 20px;">
+        Total Projected Expense for current month: <span id="total-sum" th:text="${totalExpenseObj}"
+                                                         style="color:green;"></span>
+        <hr/>
+    </div>
+
+    <div align="center" id="section-hist-details" style="display:none;">
+        <h4 align="center">Projected Expense Summary History</h4>
+        <table id="tableDiv1" class="table table-striped" dt:table="true">
+            <thead class="floral-background">
+            <tr>
+                <th>Month-Year</th>
+                <th>Description</th>
+                <th>Amount (&#8377;)</th>
+            </tr>
+            </thead>
+            <tbody id="employee_data_body1">
+            <tr th:each="prjExpSummObj : ${prjExpSummHistObjList}">
+                <td th:text="${prjExpSummObj.prjExpSummMthYr}"/>
+                <td th:text="${prjExpSummObj.prjExpSummDesc}"/>
+                <td th:text="${prjExpSummObj.prjExpSummAmt}"/>
+            </tr>
+            </tbody>
+        </table>
+        <hr/>
+    </div>
+
+    <div th:if="${isAdmin and reportsPage}">
+        <form id="download-reports-form" th:action="@{/downloadReport}" th:object="${reportObj}"
+              method="post">
+            <input type="submit" name="files" value="Download Report"/>
+            <input type="hidden" name="forMonth" th:field="*{selectMonth}" th:value="${selectMonth}" />
+            <input type="hidden" id="reportsType" th:field="*{reportsType}"/>
+        </form>
+    </div>
+</section>
+</body>
+</html>

@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorator="Layouts/MenuLayout" xmlns:dt="http://www.thymeleaf.org/dandelion/datatables">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Audit Trail Logs</title>
+
+</head>
+<body>
+<section layout:fragment="custom-main-content">
+    <div th:if="${auditTrailObjList != null}" align="center">
+        <h4>Audit Trail Log Details</h4>
+        <table id="tableDiv" class="table table-striped" dt:table="true">
+            <thead class="floral-background">
+            <tr>
+                <th>Log Date</th>
+                <th>Log Action</th>
+                <th>Table Name</th>
+                <th>Username</th>
+                <th>Log Description</th>
+            </tr>
+            </thead>
+            <tbody id="employee_data_body">
+            <tr th:each="auditTrailObj : ${auditTrailObjList}">
+                <td th:text="${auditTrailObj.logTime}"/>
+                <td th:text="${auditTrailObj.logAction}"/>
+                <td th:text="${auditTrailObj.tableName}"/>
+                <td th:text="${auditTrailObj.username}"/>
+                <td th:text="${auditTrailObj.logDescription}"/>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+</section>
+</body>
+</html>

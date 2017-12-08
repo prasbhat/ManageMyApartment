@@ -7,31 +7,85 @@ public interface ManageMyApartmentConstants {
     //Dynamic Statements
     String LOGGER_ENTRY = "Entry [{0}::{1}]";
     String LOGGER_EXIT = "Exit [{0}::{1}]";
-    String SUCCESS_MSG = "{0} {1} Successfully";
+    String SUCCESS_MSG = "{0} {1} Successful";
+    String MONTH_FREEZE = "Month {0} is Freezed";
+    String INVALID_LENGTH = "should be between {0} and {1} characters";
 
-    //Generic words
+    //Constants
+    int DEFAULT_AMOUNT = 1000;
+    String STRING_EMPTY = "";
+    String STRING_OF = " of ";
+    String UNDER_SCORE = "_";
+    String STRING_PERIOD = ".";
+
+    //Action words
     String USER = "User";
     String LOGIN = "Login";
-    String PASSWORD = "Password";
-    String CREATED = "Created";
-    String UPDATED = "Updated";
-    String DELETED = "Deleted";
+    String CREATE = "Create";
+    String UPDATE = "Update";
+    String DELETE = "Delete";
     String TRANSACTION = "Transaction";
+    String FREEZE = "Freeze";
+    String REGISTER = "Register";
 
     //Error messages
     String INVALID_LOGIN = "Invalid credentials";
-    String INVALID_EMAIL = "Email address does not exists";
-    String INVALID_PASSWORD_MISMATCH = "New Password and Confirm Password do not match";
-    String INVALID_USER_EXISTS = "Different user with same email address exists";
+    String EMAIL_ADDRESS_DOES_NOT_EXISTS = "Email address does not exists";
+    String INVALID_EMAIL_ADDRESS = "Please provide valid Email Address";
+    String INVALID_PASSWORD_MISMATCH = "Password and Confirm Password do not match";
+    String INVALID_NEW_PASSWORD = "New Password cannot be same as previous password";
+    String INVALID_USER_EXISTS = "An Active User with same Email Address or Flat Number already exists";
     String INVALID_USER = "User does not exists";
+    String DUPLICATE_MONTH_ENTRY = "Entry for this month already exists";
+    String INVALID_DATE = "Date cannot be after current date";
+    String INVALID_PHONE_NUMBER = "should contain only numbers";
+    String INVALID_NO_OF_PPL = "cannot be 0";
 
     //Key names
     String KEY_ERRORS = "Errors";
     String KEY_SUCCESS = "Success";
+    String PASSWORD = "Password";
+    String FILENAME = "Filename";
+    String EMAIL_ADDRESS = "Email Address";
+    String RESIDING_SINCE = "Residing Since";
+    String DATE_OF_BIRTH = "Date Of Birth";
+    String PHONE_NUMBER = "Phone Number";
+    String ALT_PHONE_NUMBER = "Alternate Phone Number";
+    String SECONDARY_EMAIL_ADDRESS = "Secondary Email Address";
+    String OWNER_PHONE_NUMBER = "Owner Phone Number";
+    String OWNER_EMAIL_ADDRESS = "Owner Email Address";
+    String NUMBER_OF_PPL = "Number of people";
+    String REPORT_NAME = "reportName";
+    String PDF_FILENAME = "pdfFilename";
+    String OBJ_DATA_LIST = "objDataList";
+    String MAV = "mav";
+    String TITLE_TEXT = "titleText";
+    String APT_NAME = "mainTitleText";
+    String REG_DTL_TXT = "regDtlText";
+    String ADDR_TEXT = "addrText";
+
+    String FILE_PDF_EXTENSION = ".pdf";
+    String DATE_PATTERN = "yyyyMMddHHmmss";
+    String FOLDER_REPORTS = "Reports/";
+    String REPORTS_PARAM = "reports";
+    String REPORTS_PAGE = "reportsPage";
+    String PDF_USER_REPORTS = "User_Report_";
+    String PDF_TRX_REPORTS = "Trans_Summ_Report_";
+    String PDF_PROJECTED_SUMMARY_REPORTS = "Prj_Summ_Report_";
+    String CONTENT_DISPOSITION = "Content-Disposition";
+    String ATTACHMENT_FILENAME = "attachment; filename=";
+
+    //Table (Entity) Names
+    String RESIDENT_USERS = "ResidentUsers";
+    String TRANSACTION_SUMMARY = "TransactionSummary";
+    String PROJECTED_EXPENSE_SUMMARY = "ProjectedExpenseSummary";
+    String FREEZED_MONTH = "MonthlyExpense";
 
     //Model Names
+    String MODEL_LOGIN_USER = "loggedInUser";
     String MODEL_USER_OBJ = "userObj";
-    String MODEL_ADMIN_PAGE = "adminPage";
+    String MODEL_IS_ADMIN = "isAdmin";
+    String MODEL_IS_SUPER_ADMIN = "isSuperAdmin";
     String MODEL_RESET_PASSWORD = "resetPassword";
     String MODEL_LOGIN_ERROR = "loginError";
     String MODEL_MESSAGE = "message";
@@ -40,9 +94,22 @@ public interface ManageMyApartmentConstants {
     String MODEL_USER_OBJ_LIST = "userObjList";
     String MODEL_BIND_ERRORS = "bindErrors";
     String MODEL_TRX_SUMM_LIST = "transactionSummaryList";
+    String MODEL_TRX_SUMM_HIST_LIST = "transactionSummaryHistList";
     String MODEL_NEW_TRX_OBJ = "newTransactionObj";
+    String MODEL_TRX_SUMM_REPORTS_OBJ = "transactionSummaryReportsObj";
+    String MODEL_REPORT_OBJ = "reportObj";
     String MODEL_MAINT_OBJ_LIST = "maintObjList";
     String MODEL_MAINT_OBJ = "maintObj";
+    String MODEL_PRJ_EXP_SUMM_OBJ = "prjExpSummObj";
+    String MODEL_PRJ_EXP_SUMM_OBJ_LIST = "prjExpSummObjList";
+    String MODEL_PRJ_EXP_SUMM_HIST_OBJ_LIST = "prjExpSummHistObjList";
+    String MODEL_SAME_USER_EDIT = "sameUserEdit";
+    String MODEL_FULL_MONTH_LIST = "fullMonthList";
+    String MODEL_CURR_MONTH_YEAR = "currYearMonth";
+    String MODEL_TOTAL_EXP_OBJ = "totalExpenseObj";
+    String MODEL_FREEZED_MONTH_OBJ = "freezeMonthObj";
+    String MODEL_IS_PROJECTED_ALLLOWED = "isProjectedAllowed";
+    String MODEL_AUDIT_TRIAL_OBJ_LIST = "auditTrailObjList";
 
     //View names
     String VIEW_HOME = "home";
@@ -52,9 +119,18 @@ public interface ManageMyApartmentConstants {
     String VIEW_UPDATE_USER = "updateUser";
     String VIEW_PROFILE_LIST = "profileList";
     String VIEW_TRANSACTION_SUMMARY = "transactionSummary";
-    String VIEW_DEFAULT_MAINT_AMOUNT = "defaultMaintAmount";
+    String VIEW_MONTHLY_REPORT = "monthlyReport";
+    String VIEW_TRX_SUMM_REPORT = "transactionSummaryReport";
+    String VIEW_MAINT_OBJ_SUMMARY = "maintObjSummary";
+    String VIEW_PROJECTED_EXPENSE_SUMMARY = "projectedExpenseSummary";
+//    String VIEW_PRJ_SUMM_MONTHLY_REPORT = "transactionSummaryMonthlyReport";
+    String VIEW_MONTHLY_EXPENSE = "monthlyExpense";
+    String VIEW_USER_REPORTS = "userReports";
+    String VIEW_PROJECT_SUMMARY_REPORTS = "projectedSummaryReport";
+    String VIEW_AUDIT_TRIAL_LOGS = "auditTrailLogs";
 
-    enum USER_ROLE {ADMIN, USER}
+    //Enums
+    enum USER_ROLE {SUPER_ADMIN, ADMIN, USER}
 
     enum RESIDENT_STATUS {OWNER, TENANT}
 
@@ -62,5 +138,19 @@ public interface ManageMyApartmentConstants {
 
     enum EXPENSE_TYPE {EXPENSE, INCOME}
 
-    enum MODE_OF_PAYMENT {Cash, Online, Wallet}
+    enum MODE_OF_PAYMENT {CASH, ONLINE}
+
+    enum GENDER {MALE,FEMALE}
+
+    enum VEHICLE_TYPE {TWO_WHEELER, FOUR_WHEELER}
+
+    enum TICKET_STATUS {NEW, OPEN, IN_PROGRESS, ON_HOLD, RESOLVED, CLOSED}
+
+    enum USER_DETAILS {FULL_USER, SINGLE_USER}
+
+    enum VIEW_STATUS {VIEW, DOWNLOAD}
+
+    enum REPORT_TYPE {transact, project, user}
+
+    enum DOC_UPLOAD_TYPE {user, transact, super_admin}
 }

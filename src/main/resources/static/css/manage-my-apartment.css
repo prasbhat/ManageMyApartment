@@ -1,0 +1,72 @@
+@CHARSET "ISO-8859-1";
+
+.floral-background {
+  background: url(../images/old-paper-floral-parchment-background.jpg) no-repeat  top;
+}
+
+.background {
+  background: url(../images/black-background.jpg) no-repeat  top;
+}
+
+.light-green-background {
+  background: url(../images/light-green-background.jpg) no-repeat  top;
+}
+
+
+.form-register {
+  max-width: 800px;
+  padding: 15px;
+  margin: 0 auto;
+  background-color: #F7F7F7;
+}
+
+.error-message{
+	 color:red;
+	 text-align:center;
+	 font-weight: bold;
+}
+
+header {
+    background: url(../images/header_img.jpg) repeat right top;*/
+    vertical-align: middle;
+    font-weight: bold;
+    font-family: "Times New Roman", Times, serif;
+    font-size: 20px;
+    color: #FFFFFF;
+}
+
+header>div {
+    font-weight: normal;
+    text-align: right;
+    font-size: 15px;
+}
+
+header>span {
+    font-weight: normal;
+    text-align: left;
+    font-size: 15px;
+}
+
+footer {
+    background: url(../images/footer_img.jpg) repeat bottom;*/
+    vertical-align: middle;
+    text-align: center;
+    font-weight: bold;
+    font-family: "Times New Roman", Times, serif;
+    color: #FFFFFF;
+}
+
+.right {
+    text-align: right;
+    float: right;
+}
+
+.left {
+  float:left
+}
+
+.required{
+	 color:red;
+	 text-align:center;
+	 font-weight: bold;
+}

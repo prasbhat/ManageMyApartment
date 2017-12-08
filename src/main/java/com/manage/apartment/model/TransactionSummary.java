@@ -1,10 +1,9 @@
 package com.manage.apartment.model;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
+import javax.validation.Valid;
 import java.sql.Date;
+import java.sql.Timestamp;
 
 /**
  * Created by 212591727 on 4/3/2017.
@@ -22,6 +21,12 @@ public class TransactionSummary {
     private float amount;
     private String modeOfPayment; //Cash/Online/Wallet
     private int flatNumber;
+    private Timestamp creationDate;
+    private String monthYear;
+
+    @Valid
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    UploadFile uploadFile;
 
     public int getSystemTransactionId() {
         return systemTransactionId;
@@ -71,13 +76,36 @@ public class TransactionSummary {
         this.modeOfPayment = modeOfPayment;
     }
 
-
     public int getFlatNumber() {
         return flatNumber;
     }
 
     public void setFlatNumber(int flatNumber) {
         this.flatNumber = flatNumber;
+    }
+
+    public Timestamp getCreationDate() {
+        return creationDate;
+    }
+
+    public void setCreationDate(Timestamp creationDate) {
+        this.creationDate = creationDate;
+    }
+
+    public String getMonthYear() {
+        return monthYear;
+    }
+
+    public void setMonthYear(String monthYear) {
+        this.monthYear = monthYear;
+    }
+
+    public UploadFile getUploadFile() {
+        return uploadFile;
+    }
+
+    public void setUploadFile(UploadFile uploadFile) {
+        this.uploadFile = uploadFile;
     }
 
     @Override
@@ -89,7 +117,10 @@ public class TransactionSummary {
                 ", expenseType='" + expenseType + '\'' +
                 ", amount=" + amount +
                 ", modeOfPayment='" + modeOfPayment + '\'' +
-                ", flatNumber='" + flatNumber + '\'' +
+                ", flatNumber=" + flatNumber +
+                ", creationDate=" + creationDate +
+                ", monthYear='" + monthYear + '\'' +
+                ", uploadFile=" + uploadFile +
                 '}';
     }
 }

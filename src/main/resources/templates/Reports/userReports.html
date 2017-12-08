@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <link rel="stylesheet" type="text/css" href="../bootstrap-3.3.7/css/bootstrap.min.css"/>
+    <link rel="stylesheet" type="text/css" href="../css/manage-my-apartment.css"/>
+
+</head>
+<body class="dt_example">
+<h2 th:text="${mainTitleText}"></h2>
+<h5 th:text="${regDtlText}"></h5>
+<h6 th:text="${addrText}"></h6>
+<hr/>
+<h2 align="center">User Report</h2>
+<table id="tableDiv" class="table table-striped" border="1">
+    <thead class="floral-background">
+    <tr>
+        <th>Flat Number</th>
+        <th>First Name</th>
+        <th>Last Name</th>
+        <th>Email Address</th>
+        <th>Sec Email Address</th>
+        <th>Phone Number</th>
+        <th>Alt Phone Number</th>
+        <th>Gender</th>
+        <th>Date Of Birth</th>
+        <th>Resident Status</th>
+        <th>Residing Since</th>
+        <th>Pending Amount</th>
+        <th>Is User Active</th>
+        <th>User Role</th>
+        <th>No Of People</th>
+    </tr>
+    </thead>
+    <tbody id="employee_data_body" align="center">
+        <tr th:each="userData : ${objDataList}" th:object="${userData}">
+            <td th:text="*{flatNumber}" />
+            <td th:text="*{firstname}"/>
+            <td th:text="*{lastname}"/>
+            <td th:text="*{emailAddr}"/>
+            <td th:text="*{additionalUserDetails.secondEmailAddr}"/>
+            <td th:text="*{phoneNbr}"/>
+            <td th:text="*{additionalUserDetails.altPhoneNbr}"/>
+            <td th:text="*{gender}"/>
+            <td th:text="*{dateOfBirth}"/>
+            <td th:text="*{additionalUserDetails.residentStatus}"/>
+            <td th:text="*{residingSince}"/>
+            <td th:text="*{pendingAmount}"/>
+            <td th:text="*{additionalUserDetails.isActive}"/>
+            <td th:text="*{additionalUserDetails.userRole}"/>
+            <td th:text="*{additionalUserDetails.noOfPpl}"/>
+        </tr>
+    </tbody>
+</table>
+
+</body>
+</html>

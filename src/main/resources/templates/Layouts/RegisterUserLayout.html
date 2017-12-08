@@ -1,40 +1,104 @@
-<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <title>Register User Layout</title>
-
-</head>
-<body>
-<section th:fragment="register-new-user">
-    <div class="error-message" th:if="${bindErrors != null}">
-        <div th:each="err : ${bindErrors}">
-            <span th:text="${err.key}"></span>&nbsp;<span th:text="${err.value}"></span>
+    <!DOCTYPE html>
+    <html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <title>Register User Layout</title>
+    </head>
+    <body>
+    <section th:fragment="register-new-user">
+        <div class="error-message" th:if="${bindErrors != null}">
+            <div th:each="err : ${bindErrors}">
+                <span th:text="${err.key}"></span>&nbsp;<span th:text="${err.value}"></span>
+            </div>
         </div>
-    </div>
+        <table class="table table-striped">
+            <tr>
+                <td><label>Firstname <span class="required">*</span></label></td>
+                <td><input type="text" class="form-control" placeholder="First name" name="firstname"
+                           th:field="*{firstname}" required="true"/></td>
+                <td><label>Lastname <span class="required">*</span></label></td>
+                <td><input type="text" class="form-control" placeholder="Last name" name="lastname"
+                           th:field="*{lastname}" required="true"/></td>
+            </tr>
+            <tr>
+                <td><label>Phone number (Only Numbers)<span class="required">*</span></label></td>
+                <td><input type="text" class="form-control" placeholder="Phone number" name="phoneNbr"
+                           th:field="*{phoneNbr}" required="true"/></td>
+                <td><label>Alt Phone number (Only Numbers)</label></td>
+                <td><input type="text" class="form-control" placeholder="Alternate Phone number" name="altPhoneNbr"
+                           th:field="*{additionalUserDetails.altPhoneNbr}"/></td>
+            </tr>
+            <tr>
+                <td><label>Email Address <span class="required">*</span></label></td>
+                <td><input type="text" class="form-control" placeholder="Email Address" name="emailAddr"
+                           th:field="*{emailAddr}" required="true"/></td>
+                <td><label>Secondary Email Address</label></td>
+                <td><input type="text" class="form-control" placeholder="Secondary Email Address" name="secondEmailAddr"
+                           th:field="*{additionalUserDetails.secondEmailAddr}"/></td>
+            </tr>
+            <tr>
+                <td><label>Gender <span class="required">*</span></label></td>
+                <td><select class="form-control" th:field="*{gender}">
+                    <option th:each="gender : ${genderList}"
+                            th:value="${gender}"
+                            th:text="${gender}">Male
+                    </option>
+                </select></td>
+                <td><label>Date Of Birth <span class="required">*</span></label></td>
+                <td><input type="date" class="form-control" placeholder="DD/MM/YYYY" name="dateOfBirth" th:field="*{dateOfBirth}"
+                           required="true"/></td>
+            </tr>
+            <tr>
+                <td><label>Flat number <span class="required">*</span></label></td>
+                <td><select class="form-control" th:field="*{flatNumber}">
+                    <option th:each="flatNumber : ${flatNumberList}"
+                            th:value="${flatNumber}"
+                            th:text="${flatNumber}">101
+                    </option>
+                </select></td>
+                <td><label>Residing Since <span class="required">*</span></label></td>
+                <td><input type="date" class="form-control" placeholder="DD/MM/YYYY" name="residingSince" th:field="*{residingSince}"
+                           required="true"/></td>
+            </tr>
+            <tr>
+                <td><label>Number of people <span class="required">*</span></label></td>
+                <td><input type="text" class="form-control" placeholder="Number of people staying" name="noOfPpl"
+                           th:field="*{additionalUserDetails.noOfPpl}" required="true"/></td>
+                <td><label>Resident Status <span class="required">*</span></label></td>
+                <td><select  class="form-control" th:field="*{additionalUserDetails.residentStatus}" id="residentStatus">
+                    <option th:each="residentStatus : ${residentStatusList}"
+                            th:value="${residentStatus}"
+                            th:text="${residentStatus}">Owner
+                    </option>
+                </select></td>
+            </tr>
+        </table>
 
-    <label><b>Flat number</b></label>
-    <select th:field="*{flatNumber}" class="form-control">
-        <option th:each="flatNumber : ${flatNumberList}"
-                th:value="${flatNumber}"
-                th:text="${flatNumber}">101
-        </option>
-    </select>
-    <label><b>Email Address</b></label>
-    <input type="text" class="form-control" placeholder="Enter Email Address" name="emailAddr" th:field="*{emailAddr}"
-           required="true"/>
-    <label>Firstname</label>
-    <input type="text" class="form-control" placeholder="Enter First name" name="firstname" th:field="*{firstname}" required="true"/>
-    <label>Lastname</label>
-    <input type="text" class="form-control" placeholder="Enter Last name" name="lastname" th:field="*{lastname}" required="true"/>
-    <label>Phone number</label>
-    <input type="text" class="form-control" placeholder="Enter Phone number" name="phoneNbr" th:field="*{phoneNbr}" required="true"/>
-    <label>Resident Status</label>
-    <select th:field="*{residentStatus}" class="form-control">
-        <option th:each="residentStatus : ${residentStatusList}"
-                th:value="${residentStatus}"
-                th:text="${residentStatus}">Owner
-        </option>
-    </select>
-</section>
-</body>
-</html>
+        <span id="OwnerSection" style="display:none;">
+            <table class="table table-striped">
+                <caption  class="info" style="font-weight:bold;">If Tenant, Fill the below Owner details</caption>
+                <tr>
+                    <td><label>Owner Firstname</label></td>
+                    <td><input type="text" class="form-control" placeholder="First name" name="firstname"
+                               th:field="*{ownerDetails.ownerFirstname}"/></td>
+                    <td><label>Owner Lastname</label></td>
+                    <td><input type="text" class="form-control" placeholder="Last name" name="lastname"
+                               th:field="*{ownerDetails.ownerLastname}"/></td>
+                </tr>
+                <tr>
+                    <td><label>Owner Phone number</label></td>
+                    <td><input type="text" class="form-control" placeholder="Phone number" name="phoneNbr"
+                               th:field="*{ownerDetails.ownerPhoneNbr}"/></td>
+                    <td><label>Owner Email Address</label></td>
+                    <td><input type="text" class="form-control" placeholder="Email Address" name="emailAddr"
+                               th:field="*{ownerDetails.ownerEmailAddr}" /></td>
+                </tr>
+                <tr>
+                    <td colspan="2"><label>Owner Address of Residence</label></td>
+                    <td colspan="2"><textarea class="form-control" placeholder="Residential Address" name="address"
+                                  th:field="*{ownerDetails.ownerAddr}"></textarea></td>
+                </tr>
+            </table>
+        </span>
+    </section>
+    </body>
+    </html>

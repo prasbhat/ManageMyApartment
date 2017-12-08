@@ -3,42 +3,206 @@
 <head>
     <meta charset="UTF-8"/>
     <title>Profile page</title>
-    <link rel="stylesheet" type="text/css" th:href="@{/css/login-page.css}"/>
+
 </head>
 <body>
 <section th:fragment="user-profile-content">
-    <div id="profileDiv" th:if="${userObj != null}" align="center">
-        <h1>Given below are your details</h1>
-        <table border="1">
-            <tr>
-                <th>Firstname</th>
-                <td th:text="${userObj.firstname}"></td>
-            </tr>
-            <tr>
-                <th>Lastname</th>
-                <td th:text="${userObj.lastname}"></td>
-            </tr>
-            <tr>
-                <th>Email Address/Username</th>
-                <td th:text="${userObj.emailAddr}"></td>
-            </tr>
-            <tr>
-                <th>Phone number</th>
-                <td th:text="${userObj.phoneNbr}"></td>
-            </tr>
-            <tr>
-                <th>Flat number</th>
-                <td th:text="${userObj.flatNumber}"></td>
-            </tr>
-            <tr>
-                <th>Resident Status</th>
-                <td th:text="${userObj.residentStatus}"></td>
-            </tr>
-            <tr>
-                <th>Pending Maintenance Amount</th>
-                <td th:text="${userObj.pendingAmount}"></td>
-            </tr>
-        </table>
+    <!--<div id="profileDiv" th:if="${userObj != null}" align="center">-->
+    <!--<h1>Given below are your personal details</h1>-->
+    <!--<div th:if="${!isAdmin}">-->
+    <!--<a href="#" th:href="@{/edit/{userId}/(userId=${userObj.systemUserId})}">Click Here to Edit the Details</a>-->
+    <!--</div>-->
+    <!--<table class="table-striped">-->
+    <!--<tr class="success">-->
+    <!--<th>Flat Number</th>-->
+    <!--<td th:text="${userObj.flatNumber}"></td>-->
+    <!--</tr>-->
+    <!--<tr class="info">-->
+    <!--<th>First Name</th>-->
+    <!--<td th:text="${userObj.firstname}"></td>-->
+    <!--</tr>-->
+    <!--<tr class="success">-->
+    <!--<th>Last Name</th>-->
+    <!--<td th:text="${userObj.lastname}"></td>-->
+    <!--</tr>-->
+    <!--<tr class="info">-->
+    <!--<th>Email Address/Username</th>-->
+    <!--<td th:text="${userObj.emailAddr}"></td>-->
+    <!--</tr>-->
+    <!--<tr class="success">-->
+    <!--<th>Phone Number</th>-->
+    <!--<td th:text="${userObj.phoneNbr}"></td>-->
+    <!--</tr>-->
+    <!--<tr class="info">-->
+    <!--<th>Secondary Email Address</th>-->
+    <!--<td th:text="${userObj.additionalUserDetails.secondEmailAddr}"></td>-->
+    <!--</tr>-->
+    <!--<tr class="success">-->
+    <!--<th>Alternate Phone Number</th>-->
+    <!--<td th:text="${userObj.additionalUserDetails.altPhoneNbr}"></td>-->
+    <!--</tr>-->
+    <!--<tr class="info">-->
+    <!--<th>Resident Status</th>-->
+    <!--<td th:text="${userObj.additionalUserDetails.residentStatus}"></td>-->
+    <!--</tr>-->
+    <!--<tr class="success">-->
+    <!--<th>Residing Since</th>-->
+    <!--<td th:text="${userObj.residingSince}"></td>-->
+    <!--</tr>-->
+    <!--<tr class="info">-->
+    <!--<th>Number Of People Residing</th>-->
+    <!--<td th:text="${userObj.additionalUserDetails.noOfPpl}"></td>-->
+    <!--</tr>-->
+    <!--<tr class="success">-->
+    <!--<th>Pending Maintenance Amount</th>-->
+    <!--<td th:text="${userObj.pendingAmount}"></td>-->
+    <!--</tr>-->
+    <!--</table>-->
+    <!--<a href="#" id="owner-details">Click to check Owner Details</a>&nbsp;<br/>-->
+    <!--<table class="table-striped" id="ownerDetails" style="display:none;">-->
+    <!--<tr class="info">-->
+    <!--<th>Owner Firstname</th>-->
+    <!--<td th:text="${userObj.ownerDetails.ownerFirstname}"></td>-->
+    <!--</tr>-->
+    <!--<tr class="success">-->
+    <!--<th>Owner Lastname</th>-->
+    <!--<td th:text="${userObj.ownerDetails.ownerLastname}"></td>-->
+    <!--</tr>-->
+    <!--<tr class="info">-->
+    <!--<th>Owner Phone number</th>-->
+    <!--<td th:text="${userObj.ownerDetails.ownerPhoneNbr}"></td>-->
+    <!--</tr>-->
+    <!--<tr class="success">-->
+    <!--<th>Owner Email Address</th>-->
+    <!--<td th:text="${userObj.ownerDetails.ownerEmailAddr}"></td>-->
+    <!--</tr>-->
+    <!--<tr class="info">-->
+    <!--<th>Owner Address of Residence</th>-->
+    <!--<td th:text="${userObj.ownerDetails.ownerAddr}"></td>-->
+    <!--</tr>-->
+    <!--</table>-->
+    <!--<br/>-->
+    <!--<span style="color:red;font-weight:bold;">-->
+    <!--Pending Maintenance Amount : <span th:text="${userObj.pendingAmount}"></span>-->
+    <!--</span>-->
+    <!--</div>-->
+    <div class="modal fade" th:id="${userObjData.systemUserId}" aria-labelledby="tiketLabel"
+         role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <table width="100%">
+                        <tr>
+                            <td><h4 align="center">USER DETAILS</h4></td>
+                            <td>
+                                <button type="button" class="close" data-dismiss="modal"
+                                        aria-hidden="true">&times;
+                                </button>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="modal-body">
+                    <table id="tableModal" class="table table-bordered table-striped">
+                        <tr>
+                            <th>First Name</th>
+                            <td th:text="${userObjData.firstname}"/>
+                            <th>Last Name</th>
+                            <td th:text="${userObjData.lastname}"/>
+                        </tr>
+                        <tr>
+                            <th>Email Address</th>
+                            <td th:text="${userObjData.emailAddr}"/>
+                            <th>Secondary Email Address</th>
+                            <td th:text="${userObjData.additionalUserDetails.secondEmailAddr}"/>
+                        </tr>
+                        <tr>
+                            <th>Phone Number</th>
+                            <td th:text="${userObjData.phoneNbr}"/>
+                            <th>Alt Phone Number</th>
+                            <td th:text="${userObjData.additionalUserDetails.altPhoneNbr}"/>
+                        </tr>
+                        <tr>
+                            <th>Gender</th>
+                            <td th:text="${userObjData.gender}"/>
+                            <th>Date Of Birth</th>
+                            <td th:text="${userObjData.dateOfBirth}"/>
+                        </tr>
+                        <tr>
+                            <th>Flat Number</th>
+                            <td th:text="${userObjData.flatNumber}"/>
+                            <th>Residing Since</th>
+                            <td th:text="${userObjData.residingSince}"/>
+                        </tr>
+                        <tr>
+                            <th>Resident Status</th>
+                            <td th:text="${userObjData.additionalUserDetails.residentStatus}"/>
+                            <th>User Status(Is Active)</th>
+                            <td th:text="${userObjData.additionalUserDetails.isActive}"/>
+                        </tr>
+                        <tr>
+                            <th>User Role</th>
+                            <td th:text="${userObjData.additionalUserDetails.userRole}"/>
+                            <th>Number Of People</th>
+                            <td th:text="${userObjData.additionalUserDetails.noOfPpl}"/>
+                        </tr>
+                        <tr>
+                            <th>Pending Amount</th>
+                            <td th:text="${userObjData.pendingAmount}"/>
+                            <th>Uploaded File</th>
+                            <td th:if="${userObjData.additionalUserDetails.uploadFile != null}">
+                                <a href="#" th:href="@{/getPdf(systemId=${userObjData.systemUserId},
+                                 docType=${userObjData.additionalUserDetails.uploadFile.docUploadType})}">
+                                    <span th:text="${userObjData.additionalUserDetails.uploadFile.filename}"></span>
+                                </a>
+                            </td>
+                            <td th:if="${userObjData.additionalUserDetails.uploadFile == null}">
+                                <h6>NA</h6>
+                            </td>
+                        </tr>
+                        <span th:if="${userObjData.ownerDetails != null}">
+                            <tr class="active">
+                                <td colspan="4" align="center"><h5>Owner Details are given below</h5></td>
+                            </tr>
+                            <tr>
+                                <th>Owner First Name</th>
+                                <td th:text="${userObjData.ownerDetails.ownerFirstname}"></td>
+                                <th>Owner Last Name</th>
+                                <td th:text="${userObjData.ownerDetails.ownerLastname}"></td>
+                            </tr>
+                            <tr>
+                                <th>Owner Phone Number</th>
+                                <td th:text="${userObjData.ownerDetails.ownerPhoneNbr}"></td>
+                                <th>Owner Email Address</th>
+                                <td th:text="${userObjData.ownerDetails.ownerEmailAddr}"></td>
+                            </tr>
+                            <tr>
+                                <th>Owner Address</th>
+                                <td colspan="3" th:text="${userObjData.ownerDetails.ownerAddr}"></td>
+                            </tr>
+                        </span>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <table width="100%">
+                        <tr>
+                            <td colspan="2" align="center">
+                                <a href="#"
+                                   th:href="@{/edit/{userId}/(userId=${userObjData.systemUserId})}">Edit</a>
+                            </td>
+                            <span th:if="${isSuperAdmin and userObjData.additionalUserDetails.isActive}">
+                                <td colspan="2" align="center"
+                                    th:if="${userObjData.additionalUserDetails.userRole != 'SUPER_ADMIN'}">
+                                    <a href="#"
+                                       th:href="@{/deleteUser/{userId}/(userId=${userObjData.systemUserId})}">
+                                        Delete</a>
+                                </td>
+                            </span>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
     </div>
 </section>
 </body>

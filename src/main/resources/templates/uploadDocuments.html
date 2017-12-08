@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorator="Layouts/MenuLayout" xmlns:dt="http://www.thymeleaf.org/dandelion/datatables">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Upload Documents</title>
+
+</head>
+<body>
+<h3>Upload Apartment Related Documents</h3>
+<section layout:fragment="custom-main-content">
+    <div id="add_row_table">
+        <form id="addRowForm" th:action="@{/uploadDocuments}" th:object="${updateDocumentObj}" th:method="post"
+              class="form-register"
+              enctype="multipart/form-data">
+            <label>Document name</label>
+            <input type="text" class="form-control" placeholder="Enter Filename" name="filename"
+                   th:field="*{filename}"/>
+            <label>Upload Document (Upto 5MB &amp; Only .pdf)</label>
+            <input type="file" class="form-control" name="fileUpload" accept="application/pdf" th:field="*{tempFile}"/>
+            <input type="submit" id="addButton" class="button" value="Add"/>
+        </form>
+    </div>
+
+    <div align="center" id="section-hist-details">
+        <h4 align="center" style="color: #ffffff;">Uploaded Documents</h4>
+        <table id="tableHist" class="table table-striped" dt:table="true">
+            <thead class="floral-background">
+            <tr>
+                <th>Filename</th>
+                <th>Creation Date</th>
+                <th>Uploaded File</th>
+                <th>Uploaded By</th>
+                <th>Delete</th>
+            </tr>
+            </thead>
+            <tbody id="employee_data_body">
+            <tr th:each="updateDocument : ${updateDocumentObjList}">
+                <td th:text="${updateDocument.filename}"/>
+                <td th:text="${updateDocument.creationDate}"/>
+                <td>
+                    <a href="#"
+                       th:href="@{/getPdf(systemId=${updateDocument.systemUploadFileId},
+                       docType=${updateDocument.docUploadType})}">
+                        <span th:text="${updateDocument.filename}"></span>
+                    </a>
+                </td>
+                <td th:text="${updateDocument.docUploadType}"/>
+                <td>
+                    <a href="#"
+                       th:href="@{/deleteDocument/{systemUploadFileId}/(systemUploadFileId=${updateDocument.systemUploadFileId})}">
+                        Delete</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+        <hr/>
+    </div>
+</section>
+</body>
+</html>

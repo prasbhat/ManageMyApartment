@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <link rel="stylesheet" type="text/css" href="../bootstrap-3.3.7/css/bootstrap.min.css"/>
+    <link rel="stylesheet" type="text/css" href="../css/manage-my-apartment.css"/>
+</head>
+<body>
+<h2 th:text="${mainTitleText}"></h2>
+<h5 th:text="${regDtlText}"></h5>
+<h6 th:text="${addrText}"></h6>
+<hr/>
+<h3 align="center">Monthly Projected Expense Report (<span th:text="${titleText}"/>)</h3>
+<table id="tableDiv" class="table table-striped" border="1">
+    <thead class="floral-background">
+    <tr>
+        <th>Description</th>
+        <th>Amount</th>
+    </tr>
+    </thead>
+    <tbody id="employee_data_body">
+    <tr th:each="prjExpSummObj : ${objDataList}">
+        <td th:text="${prjExpSummObj.prjExpSummDesc}"/>
+        <td th:text="${prjExpSummObj.prjExpSummAmt}"/>
+    </tr>
+    </tbody>
+</table>
+
+<hr/>
+<h3>Monthly Maintenance Details Report</h3>
+<table id="tableDiv2" border="1">
+    <thead class="floral-background">
+    <tr>
+        <th>Total Expense</th>
+        <th>No Of Flats</th>
+        <th>Monthly Maintenance</th>
+    </tr>
+    </thead>
+    <tbody >
+    <tr th:each="fullMonthObj : ${fullMonthList}">
+        <td th:text="${fullMonthObj.totalExpense}"/>
+        <td th:text="${fullMonthObj.noOfFlats}"/>
+        <td th:text="${fullMonthObj.monthlyMaint}"/>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>

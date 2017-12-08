@@ -1,51 +1,70 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorator="Layouts/MenuLayout">
+      layout:decorator="Layouts/MenuLayout" xmlns:dt="http://www.thymeleaf.org/dandelion/datatables">
 <head>
     <meta charset="UTF-8"/>
 
-    <script type="text/javascript"></script>
+    <script th:inline="javascript">
+    /*<![CDATA[*/
+        $(document).ready(function () {
+            $(".open-UserDetailsDialog").click(function () {
+                alert($(this).data('flatNumber'));
+                $('#modalFlatNumber').val($(this).data('flatNumber'));
+                $('#userDetailsModal').show();
+            });
+        });
+    /*]]>*/
+
+
+
+
+    </script>
 </head>
 <body class="dt_example">
 
 <section layout:fragment="custom-main-content">
-    <a href="#" th:href="@{/register}">Add New User</a>&nbsp;<br/>
-    <table id="tableDiv" class="table table-striped" th:if="${userObjList} != null">
-        <thead>
+    <a href="#" th:href="@{/register}" th:if="${isAdmin}">Add New User</a>&nbsp;<br/>
+    <table id="tableDiv" class="table table-striped" th:if="${userObjList} != null" dt:table="true">
+        <thead class="floral-background">
         <tr>
             <th>Flat Number</th>
             <th>First Name</th>
             <th>Last Name</th>
             <th>Email Address</th>
-            <th>Phone Number</th>
-            <th>Is Active</th>
+            <th th:if="${isAdmin}">User Role</th>
             <th>Resident Status</th>
-            <th>User Role</th>
-            <th>Pending Amount</th>
-            <th>Edit</th>
-            <th>Delete</th>
+            <th>Pending Amount (&#8377;)</th>
+            <th th:if="${isSuperAdmin}">User Status(Is Active)</th>
         </tr>
         </thead>
-        <tbody id="employee_data_body">
+        <tbody id="employee_data_body" align="center">
         <tr th:each="userObjData : ${userObjList}">
-            <td th:text="${userObjData.flatNumber}"/>
+            <td>
+                <a th:href="'#'+${userObjData.systemUserId}" data-toggle="modal">
+                    <span th:text="${userObjData.flatNumber}"/>
+                </a>
+                <!-- Modal Section -->
+                <section class="main" th:replace="Layouts/ProfileLayout::user-profile-content">Custom content</section>
+            </td>
             <td th:text="${userObjData.firstname}"/>
             <td th:text="${userObjData.lastname}"/>
             <td th:text="${userObjData.emailAddr}"/>
-            <td th:text="${userObjData.phoneNbr}"/>
-            <td th:text="${userObjData.isActive}"/>
-            <td th:text="${userObjData.residentStatus}"/>
-            <td th:text="${userObjData.userRole}"/>
+            <td th:if="${isAdmin}" th:text="${userObjData.additionalUserDetails.userRole}"/>
+            <td th:text="${userObjData.additionalUserDetails.residentStatus}"/>
             <td th:text="${userObjData.pendingAmount}"/>
-            <td>
-                <a href="#" th:href="@{/edit/{userId}/(userId=${userObjData.systemUserId})}">Edit</a>
-            </td>
-            <td>
-                <a href="#" th:href="@{/deleteUser/{userId}/(userId=${userObjData.systemUserId})}">Delete</a>
-            </td>
+            <td th:if="${isSuperAdmin}" th:text="${userObjData.additionalUserDetails.isActive}"/>
         </tr>
         </tbody>
     </table>
+    <h6 style="color: #FFFFFF;">NOTE: Click on Flat Number to see more details</h6>
+
+    <div th:if="${isAdmin and reportsPage}">
+        <form id="download-reports-form" th:action="@{/downloadReport}" th:object="${reportObj}"
+              method="post">
+            <input type="submit" name="files" value="Download Report"/>
+           <input type="hidden" id="reportsType" th:field="*{reportsType}"/>
+        </form>
+    </div>
 </section>
 
 </body>
