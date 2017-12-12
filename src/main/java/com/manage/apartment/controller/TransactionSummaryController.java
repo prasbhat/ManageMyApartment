@@ -124,7 +124,7 @@ public class TransactionSummaryController implements ManageMyApartmentConstants 
             transactionSummaryObj.setCreationDate(new Timestamp(System.currentTimeMillis()));
             transactionSummaryObj.setMonthYear(transactionSummaryObj.getDate().toString().substring(0, 7));
 
-            if(null != transactionSummaryObj.getUploadFile()){
+            if(null != transactionSummaryObj.getUploadFile().getFilename()){
                 UploadFile uploadFile = ManageMyApartmentUtil.uploadFileDetails(transactionSummaryObj.
                         getUploadFile(), DOC_UPLOAD_TYPE.transact.name());
                 transactionSummaryObj.setUploadFile(uploadFile);

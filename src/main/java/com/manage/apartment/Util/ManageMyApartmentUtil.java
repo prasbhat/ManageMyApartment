@@ -189,7 +189,7 @@ public class ManageMyApartmentUtil implements ManageMyApartmentConstants {
             MultipartFile inputFile = uploadFile.getTempFile();
             byte[] byteArr = inputFile.getBytes();
 
-            if(uploadFile.getFilename().isEmpty())
+            if (null == uploadFile.getFilename() || uploadFile.getFilename().isEmpty())
                 uploadFile.setFilename(inputFile.getOriginalFilename().substring(0,
                         inputFile.getOriginalFilename().lastIndexOf(STRING_PERIOD)));
 
