@@ -13,11 +13,7 @@ import java.util.List;
 import static com.manage.apartment.Util.ManageMyApartmentConstants.MODEL_LOGIN_USER;
 
 @Service
-@SessionAttributes(MODEL_LOGIN_USER)
 public class SuperAdminService implements ManageMyApartmentConstants {
-
-    private static final Logger LOGGER = Logger.getLogger(SuperAdminService.class);
-    private String className = this.getClass().getSimpleName();
 
     @Autowired
     UploadFileRepository uploadFileRepository;

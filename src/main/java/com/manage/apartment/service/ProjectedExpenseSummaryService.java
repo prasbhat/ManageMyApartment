@@ -19,11 +19,7 @@ import java.util.List;
 import static com.manage.apartment.Util.ManageMyApartmentConstants.MODEL_LOGIN_USER;
 
 @Service
-@SessionAttributes(MODEL_LOGIN_USER)
 public class ProjectedExpenseSummaryService implements ManageMyApartmentConstants {
-
-    private static final Logger LOGGER = Logger.getLogger(ProjectedExpenseSummaryService.class);
-    private String className = this.getClass().getSimpleName();
 
     @Autowired
     ProjectedExpenseSummaryController projectedExpenseSummaryController;
@@ -31,8 +27,7 @@ public class ProjectedExpenseSummaryService implements ManageMyApartmentConstant
     @Autowired
     ProjectedExpenseSummaryRepository projectedExpenseSummaryRepository;
 
-    public ModelAndView callprojectedExpenseSummaryHome(@ModelAttribute(value = MODEL_LOGIN_USER) ResidentUsers userSessObj,
-                                                        Model model, Reports reportObj) {
+    public ModelAndView callprojectedExpenseSummaryHome(ResidentUsers userSessObj, Model model, Reports reportObj) {
         return projectedExpenseSummaryController.projectedExpenseSummaryHome(Boolean.TRUE.toString(), userSessObj,
                 model, reportObj.getSelectMonth(), reportObj);
     }

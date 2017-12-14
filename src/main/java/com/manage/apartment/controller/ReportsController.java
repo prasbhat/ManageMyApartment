@@ -18,6 +18,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.UnsupportedEncodingException;
 import java.sql.Timestamp;
 import java.text.MessageFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -32,9 +34,6 @@ public class ReportsController implements ManageMyApartmentConstants {
 
     @Autowired
     private ManageMyApartmentUtil manageMyApartmentUtil;
-
-    @Autowired
-    private TransactionSummaryController transactionSummaryController;
 
     @Autowired
     private TransactionSummaryService transactionSummaryService;
@@ -77,6 +76,7 @@ public class ReportsController implements ManageMyApartmentConstants {
         LOGGER.info(MessageFormat.format(LOGGER_ENTRY, className, methodName));
 
         ModelAndView mav = ManageMyApartmentUtil.isUserAuthenticated(userSessObj);
+        ManageMyApartmentUtil.modelDataLoad(model);
         if (null == mav) {
             model = addAttributesToModel(model, userSessObj);
             Reports reports = new Reports();
@@ -84,6 +84,7 @@ public class ReportsController implements ManageMyApartmentConstants {
             reports.setReportsType(requestParam);
 
             model.addAttribute(MODEL_REPORT_OBJ, reports);
+            model.addAttribute(MODEL_IS_REPORT_TRANSACT, requestParam.equals(REPORT_DOC_TYPE.transact.name()));
             mav = new ModelAndView(FOLDER_REPORTS + VIEW_MONTHLY_REPORT);
         }
 
@@ -129,9 +130,6 @@ public class ReportsController implements ManageMyApartmentConstants {
 
             mav = (ModelAndView) reportConfigMap.get(MAV);
 
-            reportConfigMap.put(APT_NAME, MAIN_TITLE);
-            reportConfigMap.put(REG_DTL_TXT, REG_DTL_TEXT);
-            reportConfigMap.put(ADDR_TEXT, ADDR_DTL_TEXT);
             manageMyApartmentUtil.generateReports(response, reportConfigMap);
         }
 
@@ -169,9 +167,10 @@ public class ReportsController implements ManageMyApartmentConstants {
 
         switch (REPORT_DOC_TYPE.valueOf(reportObj.getReportsType())) {
             case transact:
-                reportConfigMap.put(MAV, transactionSummaryController.transactionSummaryHome(Boolean.TRUE.toString(), userSessObj,
-                        model, reportObj.getSelectMonth(), reportObj));
-                reportConfigMap.put(OBJ_DATA_LIST, transactionSummaryService.getTransactionByMonthYear(reportObj.getSelectMonth()));
+                reportConfigMap.put(MAV, transactionSummaryService.callTransactionSummaryHome(userSessObj, model,
+                        reportObj));
+                reportConfigMap.put(OBJ_DATA_LIST, transactionSummaryService.getTransactionByMonthYear(
+                        reportObj.getSelectMonth(), reportObj.getExpenseType()));
                 reportConfigMap.put(REPORT_NAME, FOLDER_REPORTS + VIEW_TRX_SUMM_REPORT);
                 reportConfigMap.put(PDF_FILENAME, PDF_TRX_REPORTS);
                 reportConfigMap.put(TITLE_TEXT, reportObj.getSelectMonth());
@@ -204,6 +203,13 @@ public class ReportsController implements ManageMyApartmentConstants {
         ManageMyApartmentUtil.modelDataLoad(model);
         model.addAttribute(MODEL_IS_SUPER_ADMIN, ManageMyApartmentUtil.isUserSuperAdmin(userSessObj));
         model.addAttribute(MODEL_IS_ADMIN, ManageMyApartmentUtil.isUserAdmin(userSessObj));
+
+        reportConfigMap.put(APT_NAME, MAIN_TITLE);
+        reportConfigMap.put(REG_DTL_TXT, REG_DTL_TEXT);
+        reportConfigMap.put(ADDR_TEXT, ADDR_DTL_TEXT);
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern(DATE_PATTERN_REPORT);
+        reportConfigMap.put(PRINT_DATE, dtf.format(LocalDateTime.now()));
+        reportConfigMap.put(PRINT_NAME, userSessObj.getEmailAddr());
         return model;
     }
 

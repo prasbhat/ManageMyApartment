@@ -83,11 +83,12 @@ public class TransactionSummaryController implements ManageMyApartmentConstants 
             if (requestParam.equalsIgnoreCase(Boolean.TRUE.toString())) {
                 model.addAttribute(REPORTS_PAGE, Boolean.TRUE);
                 model.addAttribute(MODEL_CURR_MONTH_YEAR, reportMonthYear);
-                transactionSummaryList = transactionSummaryService.getTransactionByMonthYear(reportMonthYear);
+                transactionSummaryList = transactionSummaryService.getTransactionByMonthYear(
+                        reportObj.getSelectMonth(), reportObj.getExpenseType());
             } else {
                 model.addAttribute(REPORTS_PAGE, Boolean.FALSE);
                 model.addAttribute(MODEL_CURR_MONTH_YEAR, currYearMonth);
-                transactionSummaryList = transactionSummaryService.getTransactionByMonthYear(currYearMonth);
+                transactionSummaryList = transactionSummaryService.getTransactionByMonthYear(currYearMonth, STRING_ALL);
             }
 
             model.addAttribute(MODEL_REPORT_OBJ, reportObj);

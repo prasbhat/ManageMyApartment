@@ -1,22 +1,27 @@
 package com.manage.apartment.service;
 
 import com.manage.apartment.Util.ManageMyApartmentConstants;
+import com.manage.apartment.controller.TransactionSummaryController;
+import com.manage.apartment.model.Reports;
+import com.manage.apartment.model.ResidentUsers;
 import com.manage.apartment.model.TransactionSummary;
 import com.manage.apartment.repository.TransactionSummaryRepository;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.ui.Model;
+import org.springframework.web.servlet.ModelAndView;
 
 import java.util.List;
 
 @Service
 public class TransactionSummaryService implements ManageMyApartmentConstants {
 
-    private static final Logger LOGGER = Logger.getLogger(TransactionSummaryService.class);
-    private String className = this.getClass().getSimpleName();
-
     @Autowired
     private TransactionSummaryRepository transactionSummaryRepository;
+
+    @Autowired
+    TransactionSummaryController transactionSummaryController;
 
     public List<TransactionSummary> getTransactionByFlatNumber(int flatNumber) {
         return transactionSummaryRepository.findByFlatNumber(flatNumber);
@@ -26,7 +31,9 @@ public class TransactionSummaryService implements ManageMyApartmentConstants {
         return transactionSummaryRepository.findOne(transactionId);
     }
 
-    public List<TransactionSummary> getTransactionByMonthYear(String monthYear){
+    public List<TransactionSummary> getTransactionByMonthYear(String monthYear, String expenseType){
+        if(!expenseType.equals(STRING_ALL))
+            return transactionSummaryRepository.findByMonthYearAndExpenseType(monthYear, expenseType);
         return transactionSummaryRepository.findByMonthYear(monthYear);
     }
 
@@ -45,7 +52,7 @@ public class TransactionSummaryService implements ManageMyApartmentConstants {
     public float getTotalTransactionAmount(String currYearMonth) {
         float sumOfExpense = 0;
 
-        List<TransactionSummary> transactionSummaryList = getTransactionByMonthYear(currYearMonth);
+        List<TransactionSummary> transactionSummaryList = getTransactionByMonthYear(currYearMonth, STRING_ALL);
 
         for (TransactionSummary transactionSummary : transactionSummaryList) {
             if (transactionSummary.getExpenseType().equals(EXPENSE_TYPE.EXPENSE.toString())) {
@@ -57,5 +64,8 @@ public class TransactionSummaryService implements ManageMyApartmentConstants {
         return sumOfExpense;
     }
 
-
+    public ModelAndView callTransactionSummaryHome(ResidentUsers userSessObj, Model model, Reports reportObj) {
+       return transactionSummaryController.transactionSummaryHome(Boolean.TRUE.toString(), userSessObj,
+                model, reportObj.getSelectMonth(), reportObj);
+    }
 }

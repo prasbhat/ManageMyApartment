@@ -8,21 +8,31 @@
 <body>
 <section layout:fragment="custom-main-content">
     <div class="login-card">
-    <form id="choose-month-reports-form" th:action="@{/getMonthlyReport}" th:object="${reportObj}"
-          method="post">
-        <label for="select_month">Select Month</label>
-        <input type="month" placeholder="Select Month" id= "select_month" th:field="*{selectMonth}"/>
-        <input type="hidden" id="reportsType" th:field="*{reportsType}"/>
-        <input type="submit" id="loginButton" class="login login-submit" value="Submit"/>
-        <!--<table id="AddRowTable" class="table table-striped">-->
+        <form id="choose-month-reports-form" th:action="@{/getMonthlyReport}" th:object="${reportObj}"
+              method="post">
+            <label for="select_month">Select Month</label>
+            <input type="month" placeholder="Select Month" id="select_month" th:field="*{selectMonth}"/>
+            <div th:if="${isReportTransact}">
+                <label for="expenseTypeDropDown">Expense Type</label>
+                <select id="expenseTypeDropDown" th:field="*{expenseType}">
+                    <option value="ALL">ALL</option>
+                    <option th:each="expenseType : ${expenseTypeList}"
+                            th:value="${expenseType}"
+                            th:text="${expenseType}">EXPENSE
+                    </option>
+                </select>
+            </div>
+            <input type="hidden" id="reportsType" th:field="*{reportsType}"/>
+            <input type="submit" id="loginButton" class="login login-submit" value="Submit"/>
+            <!--<table id="AddRowTable" class="table table-striped">-->
             <!--<tr>-->
-                <!--<th>Select Month</th>-->
-                <!--<td><input type="month" id="select_month" th:field="*{selectMonth}"/></td>-->
-                <!--<td><input type="hidden" id="reportsType" th:field="*{reportsType}"/></td>-->
-                <!--<td colspan="2"><input type="submit" id="addButton" class="button" value="Submit"/></td>-->
+            <!--<th>Select Month</th>-->
+            <!--<td><input type="month" id="select_month" th:field="*{selectMonth}"/></td>-->
+            <!--<td><input type="hidden" id="reportsType" th:field="*{reportsType}"/></td>-->
+            <!--<td colspan="2"><input type="submit" id="addButton" class="button" value="Submit"/></td>-->
             <!--</tr>-->
-        <!--</table>-->
-    </form>
+            <!--</table>-->
+        </form>
     </div>
 </section>
 </body>

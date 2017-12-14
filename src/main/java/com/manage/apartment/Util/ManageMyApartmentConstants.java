@@ -16,6 +16,7 @@ public interface ManageMyApartmentConstants {
     String STRING_OF = " of ";
     String UNDER_SCORE = "_";
     String STRING_PERIOD = ".";
+    String STRING_ALL = "ALL";
 
     //Action words
     String USER = "User";
@@ -69,6 +70,7 @@ public interface ManageMyApartmentConstants {
     String FILE_PDF_EXTENSION = ".pdf";
     String DATE_PATTERN = "yyyyMMddHHmmss";
     String GET_DATE_PATTERN = "yyyy-mm-dd";
+    String DATE_PATTERN_REPORT = "dd-MM-yyyy HH:mm:ss";
     String FOLDER_REPORTS = "Reports/";
     String REPORTS_PARAM = "reports";
     String REPORTS_PAGE = "reportsPage";
@@ -78,6 +80,8 @@ public interface ManageMyApartmentConstants {
     String ATTACHMENT_FILENAME = "attachment; filename=";
     String INLINE_FILENAME = "inline;filename=";
     String SET_CACHE_CONTROL = "must-revalidate, post-check=0, pre-check=0";
+    String PRINT_DATE = "printDate";
+    String PRINT_NAME = "printName";
 
     //Table (Entity) Names
     String RESIDENT_USERS = "ResidentUsers";
@@ -101,6 +105,7 @@ public interface ManageMyApartmentConstants {
     String MODEL_TRX_SUMM_HIST_LIST = "transactionSummaryHistList";
     String MODEL_NEW_TRX_OBJ = "newTransactionObj";
     String MODEL_REPORT_OBJ = "reportObj";
+    String MODEL_IS_REPORT_TRANSACT = "isReportTransact";
     String MODEL_PRJ_EXP_SUMM_OBJ = "prjExpSummObj";
     String MODEL_PRJ_EXP_SUMM_OBJ_LIST = "prjExpSummObjList";
     String MODEL_PRJ_EXP_SUMM_HIST_OBJ_LIST = "prjExpSummHistObjList";

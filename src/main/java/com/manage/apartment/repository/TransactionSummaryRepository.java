@@ -10,4 +10,5 @@ import java.util.List;
 public interface TransactionSummaryRepository extends PagingAndSortingRepository<TransactionSummary, Integer> {
     List<TransactionSummary> findByFlatNumber(int flatNumber);
     List<TransactionSummary> findByMonthYear(String monthYear);
+    List<TransactionSummary> findByMonthYearAndExpenseType(String monthYear, String expenseType);
 }
