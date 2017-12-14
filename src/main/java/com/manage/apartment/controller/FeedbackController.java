@@ -4,7 +4,7 @@ import com.manage.apartment.Util.ManageMyApartmentConstants;
 import com.manage.apartment.Util.ManageMyApartmentUtil;
 import com.manage.apartment.model.Feedback;
 import com.manage.apartment.model.ResidentUsers;
-import com.manage.apartment.repository.FeedbackRepository;
+import com.manage.apartment.service.FeedbackService;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -21,8 +21,6 @@ import java.text.DateFormat;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Random;
 
 import static com.manage.apartment.Util.ManageMyApartmentConstants.MODEL_LOGIN_USER;
@@ -35,10 +33,10 @@ public class FeedbackController implements ManageMyApartmentConstants {
     private String className = this.getClass().getSimpleName();
 
     @Autowired
-    SuperAdminController auditTrailLog;
+    ManageMyApartmentUtil manageMyApartmentUtil;
 
     @Autowired
-    FeedbackRepository feedbackRepository;
+    FeedbackService feedbackService;
 
     @ModelAttribute(value = MODEL_LOGIN_USER)
     private ResidentUsers createUserObj() {
@@ -47,22 +45,22 @@ public class FeedbackController implements ManageMyApartmentConstants {
 
     @GetMapping(value = "/feedback")
     public ModelAndView feedbackHome(@ModelAttribute(value = MODEL_LOGIN_USER) ResidentUsers userSessObj,
-                                                  Model model) {
+                                     Model model) {
         String methodName = Thread.currentThread().getStackTrace()[1].getMethodName();
         LOGGER.info(MessageFormat.format(LOGGER_ENTRY, className, methodName));
         ModelAndView mav = ManageMyApartmentUtil.isUserAuthenticated(userSessObj);
 
         if (null == mav) {
             ManageMyApartmentUtil.modelDataLoad(model);
-            mav = new ModelAndView("feedback", "feedbackObj", new Feedback());
+            mav = new ModelAndView(FEEDBACK, MODEL_FEEDBACK_OBJ, new Feedback());
             mav.addObject(MODEL_IS_SUPER_ADMIN, ManageMyApartmentUtil.isUserSuperAdmin(userSessObj));
             mav.addObject(MODEL_IS_ADMIN, ManageMyApartmentUtil.isUserAdmin(userSessObj));
 
-            if(ManageMyApartmentUtil.isUserSuperAdmin(userSessObj) || ManageMyApartmentUtil.isUserAdmin(userSessObj)){
-                mav.addObject("complaintsObjList", feedbackRepository.findAll());
+            if (ManageMyApartmentUtil.isUserSuperAdmin(userSessObj) || ManageMyApartmentUtil.isUserAdmin(userSessObj)) {
+                mav.addObject(MODEL_COMPLAINTS_OBJ_LIST, feedbackService.getAllFeedback());
             } else {
-                mav.addObject("complaintsObjList",
-                        feedbackRepository.findByFlatNumber(userSessObj.getFlatNumber()));
+                mav.addObject(MODEL_COMPLAINTS_OBJ_LIST,
+                        feedbackService.getFeedbackByFlatNumber(userSessObj.getFlatNumber()));
             }
 
         }
@@ -72,36 +70,27 @@ public class FeedbackController implements ManageMyApartmentConstants {
 
     @PostMapping(value = "/addEditFeedback")
     public ModelAndView addEditFeedback(@Valid @ModelAttribute(value = "feedbackObj")
-                                                             Feedback feedback,
-                                                 @ModelAttribute(value = MODEL_LOGIN_USER) ResidentUsers userSessObj,
-                                                 Model model) {
+                                                Feedback feedback,
+                                        @ModelAttribute(value = MODEL_LOGIN_USER) ResidentUsers userSessObj,
+                                        Model model) {
         String methodName = Thread.currentThread().getStackTrace()[1].getMethodName();
         LOGGER.info(MessageFormat.format(LOGGER_ENTRY, className, methodName));
 
-        Map<String, String> bindErrorsMap = new HashMap<>();
         ModelAndView mav = ManageMyApartmentUtil.isUserAuthenticated(userSessObj);
         Random random = new Random();
-        DateFormat date = new SimpleDateFormat("yyyyMMddHHmmss");
+        DateFormat date = new SimpleDateFormat(DATE_PATTERN);
 
-        if(null == mav){
+        if (null == mav) {
             ManageMyApartmentUtil.modelDataLoad(model);
 
-//            if(null == feedback.getComplaintId()){
-                feedback.setComplaintId(date.format(new Date()) + String.valueOf(random.nextInt(99)));
-                feedback.setFlatNumber(userSessObj.getFlatNumber());
-                feedback.setUsername(userSessObj.getEmailAddr());
-//                feedback.setStatus(TICKET_STATUS.NEW.name());
-//            } else {
-//                feedback.setComplaintId(feedback.getComplaintId());
-//                feedback.setFlatNumber(feedback.getFlatNumber());
-//                feedback.setUsername(feedback.getUsername());
-////                feedback.setComplaintText(feedback.getComplaintText());
-//            }
+            feedback.setComplaintId(date.format(new Date()) + String.valueOf(random.nextInt(99)));
+            feedback.setFlatNumber(userSessObj.getFlatNumber());
+            feedback.setUsername(userSessObj.getEmailAddr());
 
-            feedbackRepository.save(feedback);
-            mav = feedbackHome(userSessObj,  model);
-            mav.addObject("successMsg",
-                    "Your Feedback submitted. Ref #"+ feedback.getComplaintId());
+            feedbackService.createFeedback(feedback);
+            mav = feedbackHome(userSessObj, model);
+            mav.addObject(MODEL_MESSAGE, MessageFormat.format(SUCCESS_MSG, FEEDBACK.concat(STRING_HASH +
+                            feedback.getComplaintId()), CREATE));
         }
 
         recordAuditEntry(userSessObj.getEmailAddr());
@@ -110,8 +99,8 @@ public class FeedbackController implements ManageMyApartmentConstants {
         return mav;
     }
 
-    private void recordAuditEntry(String emailAddress){
-        auditTrailLog.recordAuditTrailLog(RESIDENT_USERS,emailAddress, "Feedback registered", REGISTER,
-                new Timestamp(System.currentTimeMillis()));
+    private void recordAuditEntry(String emailAddress) {
+        manageMyApartmentUtil.recordAuditTrailLog(FEEDBACK, emailAddress, MessageFormat.format(SUCCESS_MSG, FEEDBACK,
+                CREATE), REGISTER, new Timestamp(System.currentTimeMillis()));
     }
 }

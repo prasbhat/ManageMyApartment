@@ -33,20 +33,16 @@ public class UserController implements ManageMyApartmentConstants {
     private static final Logger LOGGER = Logger.getLogger(UserController.class);
     private String className = this.getClass().getSimpleName();
 
-//    @Autowired
-//    UserRepository userRepository;
-
     @Autowired
     UserService userService;
 
     @Autowired
     SuperAdminController auditTrailLog;
-
     @Autowired
     ResidentUserValidator residentUserValidator;
-
     @Autowired
     ManageMyApartmentUtil manageMyApartmentUtil;
+
 
     @ModelAttribute(value = MODEL_LOGIN_USER)
     private ResidentUsers createNewUserObj() {
@@ -99,7 +95,7 @@ public class UserController implements ManageMyApartmentConstants {
                         residentUsers.getAdditionalUserDetails().getIsActive()) {
                     userList.add(residentUsers);
                 }
-           }
+            }
 
             if (ManageMyApartmentUtil.isUserAdmin(userSessObj) &&
                     !ManageMyApartmentUtil.isUserSuperAdmin(userSessObj)) {
@@ -114,7 +110,7 @@ public class UserController implements ManageMyApartmentConstants {
             mav.addObject(MODEL_IS_SUPER_ADMIN, ManageMyApartmentUtil.isUserSuperAdmin(userSessObj));
             mav.addObject(MODEL_IS_ADMIN, ManageMyApartmentUtil.isUserAdmin(userSessObj));
 
-            if(requestParam.equals(Boolean.TRUE.toString())){
+            if (requestParam.equals(Boolean.TRUE.toString())) {
                 mav.addObject(REPORTS_PAGE, Boolean.TRUE);
 
                 Reports reports = new Reports();
@@ -215,7 +211,7 @@ public class UserController implements ManageMyApartmentConstants {
         return mav;
     }
 
-    @PutMapping(value = "/updateUser")
+    @PostMapping(value = "/updateUser")
     public ModelAndView updateUser(@Valid @ModelAttribute(value = MODEL_UPDATE_USER_OBJ) ResidentUsers userObjData,
                                    BindingResult bindingResult, Model model, HttpServletRequest request) {
         String methodName = Thread.currentThread().getStackTrace()[1].getMethodName();
@@ -304,18 +300,44 @@ public class UserController implements ManageMyApartmentConstants {
         return getAllUsers(Boolean.FALSE.toString(), userSessObj);
     }
 
-//    @RequestMapping(value = "/getpdf", method = RequestMethod.GET)
-//    public ResponseEntity<byte[]> viewPDF(@RequestParam(value = "userId") int userId) {
-//        String methodName = Thread.currentThread().getStackTrace()[1].getMethodName();
-//        LOGGER.info(MessageFormat.format(LOGGER_ENTRY, className, methodName));
-//
-//        ResidentUsers residentUsers = userService.findOneUser(userId);
-//
-//        ResponseEntity<byte[]> response = ManageMyApartmentUtil.retrieveFileDetails(residentUsers.
-//                getAdditionalUserDetails().getUploadFile());
-//        LOGGER.info(MessageFormat.format(LOGGER_EXIT, className, methodName));
-//        return response;
-//    }
+    @PostMapping(value = "/resetPassword")
+    public ModelAndView resetPassword(@ModelAttribute(value = MODEL_RESET_PASSWORD) ResidentUsers resetPasswordObj,
+                                      Model model) {
+        String methodName = Thread.currentThread().getStackTrace()[1].getMethodName();
+        LOGGER.info(MessageFormat.format(LOGGER_ENTRY, className, methodName));
+
+        ResidentUsers userDbObj = userService.findUsersByEmailAddress(resetPasswordObj.getEmailAddr());
+
+        if (null == userDbObj) {
+            model.addAttribute(MODEL_MESSAGE, EMAIL_ADDRESS_DOES_NOT_EXISTS);
+            return new ModelAndView(VIEW_RESET_PASSWORD);
+        }
+
+        String encryptNewPass = ManageMyApartmentUtil.cryptWithMD5(resetPasswordObj.getPassword());
+        String encryptConfirmPass = ManageMyApartmentUtil.cryptWithMD5(resetPasswordObj.getConfirm_password());
+
+        if (encryptNewPass.equals(userDbObj.getPassword())) {
+            model.addAttribute(MODEL_MESSAGE, INVALID_NEW_PASSWORD);
+            return new ModelAndView(VIEW_RESET_PASSWORD);
+        }
+
+        if (!encryptNewPass.equals(encryptConfirmPass)) {
+            model.addAttribute(MODEL_MESSAGE, INVALID_PASSWORD_MISMATCH);
+            return new ModelAndView(VIEW_RESET_PASSWORD);
+        }
+
+        userDbObj.setPassword(encryptNewPass);
+        userService.createUser(userDbObj);
+
+        model.addAttribute(MODEL_MESSAGE, MessageFormat.format(SUCCESS_MSG, PASSWORD, UPDATE));
+
+        auditTrailLog.recordAuditTrailLog(RESIDENT_USERS, userDbObj.getEmailAddr(),
+                MessageFormat.format(SUCCESS_MSG, PASSWORD, UPDATE), PASSWORD.concat(UNDER_SCORE + UPDATE),
+                new Timestamp(System.currentTimeMillis()));
+
+        LOGGER.info(MessageFormat.format(LOGGER_EXIT, className, methodName));
+        return new ModelAndView(VIEW_RESET_PASSWORD);
+    }
 
     private ResidentUsers prepareUserObject(ResidentUsers registeringUser) {
         String methodName = Thread.currentThread().getStackTrace()[1].getMethodName();
@@ -341,30 +363,11 @@ public class UserController implements ManageMyApartmentConstants {
         if (bindErrorsMap.size() == 0) {
             bindErrorsMap.put(KEY_SUCCESS, MessageFormat.format(SUCCESS_MSG, emailAddress, label));
             auditTrailLog.recordAuditTrailLog(RESIDENT_USERS, loggedInUser.getEmailAddr(),
-                    MessageFormat.format(SUCCESS_MSG, emailAddress, label), USER + "_" + label,
+                    MessageFormat.format(SUCCESS_MSG, emailAddress, label), USER.concat(UNDER_SCORE + label),
                     new Timestamp(System.currentTimeMillis()));
         }
 
         model.addAttribute(MODEL_BIND_ERRORS, bindErrorsMap);
-    }
-
-    public void addPendingAmount(float defaultMaintAmount) {
-        String methodName = Thread.currentThread().getStackTrace()[1].getMethodName();
-        LOGGER.info(MessageFormat.format(LOGGER_ENTRY, className, methodName));
-        List<ResidentUsers> fullUserObj = userService.findAllUsers();
-        for (ResidentUsers residentUser : fullUserObj) {
-            if (residentUser.getFlatNumber() != 0) {
-                int pendingAmount = residentUser.getPendingAmount();
-                if (residentUser.getAdditionalUserDetails().getIsActive()) {
-                    pendingAmount += defaultMaintAmount;
-                } else {
-                    pendingAmount += DEFAULT_AMOUNT;
-                }
-                residentUser.setPendingAmount(pendingAmount);
-                userService.createUser(residentUser);
-            }
-        }
-        LOGGER.info(MessageFormat.format(LOGGER_EXIT, className, methodName));
     }
 
     public void updatePendingAmount(int transFlatNumber, float maintAmount, boolean deduct) {
@@ -386,7 +389,7 @@ public class UserController implements ManageMyApartmentConstants {
                     pendingAmount += maintAmount;
                 }
 
-               residentUser.setPendingAmount(pendingAmount);
+                residentUser.setPendingAmount(pendingAmount);
                 userService.createUser(residentUser);
             }
         }

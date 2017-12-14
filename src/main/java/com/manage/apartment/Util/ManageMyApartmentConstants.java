@@ -12,11 +12,13 @@ public interface ManageMyApartmentConstants {
     String INVALID_LENGTH = "should be between {0} and {1} characters";
 
     //Constants
-    int DEFAULT_AMOUNT = 1000;
     String STRING_OF = " of ";
     String UNDER_SCORE = "_";
     String STRING_PERIOD = ".";
     String STRING_ALL = "ALL";
+    String STRING_HASH = "#";
+    String STRING_EQUAL = "=";
+    int NUMBER_ZERO = 0;
 
     //Action words
     String USER = "User";
@@ -89,6 +91,7 @@ public interface ManageMyApartmentConstants {
     String PROJECTED_EXPENSE_SUMMARY = "ProjectedExpenseSummary";
     String FREEZED_MONTH = "MonthlyExpense";
     String UPLOAD_FILE = "UploadFile";
+    String FEEDBACK = "Feedback";
 
     //Model Names
     String MODEL_LOGIN_USER = "loggedInUser";
@@ -116,6 +119,10 @@ public interface ManageMyApartmentConstants {
     String MODEL_FREEZED_MONTH_OBJ = "freezeMonthObj";
     String MODEL_IS_PROJECTED_ALLLOWED = "isProjectedAllowed";
     String MODEL_AUDIT_TRIAL_OBJ_LIST = "auditTrailObjList";
+    String MODEL_FEEDBACK_OBJ = "feedbackObj";
+    String MODEL_COMPLAINTS_OBJ_LIST = "complaintsObjList";
+    String MODEL_SYSTEM_UPLOAD_FILE_ID = "systemUploadFileId";
+    String MODEL_DOC_TYPE = "docType";
 
     //View names
     String VIEW_HOME = "home";
@@ -132,6 +139,7 @@ public interface ManageMyApartmentConstants {
     String VIEW_USER_REPORTS = "userReports";
     String VIEW_PROJECT_SUMMARY_REPORTS = "projectedSummaryReport";
     String VIEW_AUDIT_TRIAL_LOGS = "auditTrailLogs";
+    String VIEW_FEEDBACK = "feedback";
 
     //Enums
     enum USER_ROLE {SUPER_ADMIN, ADMIN, USER}

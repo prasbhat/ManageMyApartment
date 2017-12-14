@@ -109,12 +109,10 @@ public class SuperAdminController implements ManageMyApartmentConstants {
     }
 
     @GetMapping(value = "getUploadDocuments")
-    public ResponseEntity<byte[]> viewPDF(@RequestParam(value = "systemUploadFileId") int systemUploadFileId,
-                                          @RequestParam(value = "docType") String docUploadType) {
+    public ResponseEntity<byte[]> viewPDF(@RequestParam(value = MODEL_SYSTEM_UPLOAD_FILE_ID) int systemUploadFileId) {
         String methodName = Thread.currentThread().getStackTrace()[1].getMethodName();
         LOGGER.info(MessageFormat.format(LOGGER_ENTRY, className, methodName));
 
-        System.out.println("DOC_UPLOAD_TYPE="+docUploadType);
         UploadFile uploadFile = superAdminService.getOneUploadFile(systemUploadFileId);
 
         ResponseEntity<byte[]> response = ManageMyApartmentUtil.retrieveFileDetails(uploadFile);
@@ -123,7 +121,7 @@ public class SuperAdminController implements ManageMyApartmentConstants {
     }
 
     @GetMapping(value = "/deleteDocument/{systemUploadFileId}")
-    public ModelAndView deleteDocument(@PathVariable(value = "systemUploadFileId") int systemUploadFileId,
+    public ModelAndView deleteDocument(@PathVariable(value = MODEL_SYSTEM_UPLOAD_FILE_ID) int systemUploadFileId,
                                        @ModelAttribute(value = MODEL_LOGIN_USER) ResidentUsers userSessObj,
                                        Model model){
         String methodName = Thread.currentThread().getStackTrace()[1].getMethodName();
@@ -136,6 +134,10 @@ public class SuperAdminController implements ManageMyApartmentConstants {
             superAdminService.deleteDocuments(systemUploadFileId);
             mav = getUploadDocumentsView(userSessObj, model);
         }
+
+        recordAuditTrailLog(UPLOAD_FILE, userSessObj.getEmailAddr(),
+                MessageFormat.format(SUCCESS_MSG,MODEL_SYSTEM_UPLOAD_FILE_ID,DELETE), DELETE,
+                new Timestamp(System.currentTimeMillis()));
 
         LOGGER.info(MessageFormat.format(LOGGER_EXIT, className, methodName));
         return mav;

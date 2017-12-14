@@ -4,6 +4,8 @@ import com.manage.apartment.Util.ManageMyApartmentConstants;
 import com.manage.apartment.Util.ManageMyApartmentUtil;
 import com.manage.apartment.model.ResidentUsers;
 import com.manage.apartment.repository.UserRepository;
+import com.manage.apartment.service.TransactionSummaryService;
+import com.manage.apartment.service.UserService;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -27,14 +29,15 @@ public class LoginController implements ManageMyApartmentConstants {
 
     private static final Logger LOGGER = Logger.getLogger(LoginController.class);
     private String className = this.getClass().getSimpleName();
-    @Autowired
-    private UserRepository userRepository;
 
     @Autowired
-    private TransactionSummaryController transactionSummaryController;
+    private UserService userService;
 
     @Autowired
-    SuperAdminController auditTrailLog;
+    private TransactionSummaryService transactionSummaryService;
+
+    @Autowired
+    private ManageMyApartmentUtil manageMyApartmentUtil;
 
     @GetMapping(value = "/")
     public ModelAndView home() {
@@ -64,7 +67,7 @@ public class LoginController implements ManageMyApartmentConstants {
 
     @GetMapping(value = "/home")
     public ModelAndView getUserHome(@ModelAttribute(value = MODEL_LOGIN_USER) ResidentUsers loggedInUser, Model model){
-        return transactionSummaryController.getOneTransaction(loggedInUser);
+        return transactionSummaryService.callGetOneTransaction(loggedInUser);
     }
 
     @PostMapping(value = "/login")
@@ -73,25 +76,23 @@ public class LoginController implements ManageMyApartmentConstants {
         String methodName = Thread.currentThread().getStackTrace()[1].getMethodName();
         LOGGER.info(MessageFormat.format(LOGGER_ENTRY, className, methodName));
 
-        ResidentUsers existingUser = userRepository.findByEmailAddr(loggedInUser.getEmailAddr());
+        ResidentUsers existingUser = userService.findUsersByEmailAddress(loggedInUser.getEmailAddr());
         ModelAndView mav;
 
         if (ManageMyApartmentUtil.isUserAuthorized(existingUser, loggedInUser)) {
             LOGGER.info(MessageFormat.format(SUCCESS_MSG, USER, LOGIN));
             model.addAttribute(MODEL_LOGIN_USER, existingUser);
             request.getSession().setAttribute(MODEL_LOGIN_USER, existingUser);
-//            model.addAttribute(MODEL_USER_OBJ, existingUser);
             model.addAttribute(MODEL_IS_ADMIN, ManageMyApartmentUtil.isUserAdmin(existingUser));
             model.addAttribute(MODEL_IS_SUPER_ADMIN, ManageMyApartmentUtil.isUserSuperAdmin(existingUser));
 
-            mav = transactionSummaryController.getOneTransaction(existingUser);
+            mav = transactionSummaryService.callGetOneTransaction(existingUser);
 
             recordAuditEntry(loggedInUser.getEmailAddr(), MessageFormat.format(SUCCESS_MSG, loggedInUser.getEmailAddr(),
                     LOGIN), USER.concat(UNDER_SCORE+LOGIN));
 
         } else {
             model.addAttribute(MODEL_LOGIN_ERROR, INVALID_LOGIN);
-//            mav = mvController.home();
             mav = home();
         }
         LOGGER.info(MessageFormat.format(LOGGER_EXIT, className, methodName));
@@ -99,46 +100,8 @@ public class LoginController implements ManageMyApartmentConstants {
         return mav;
     }
 
-    @PostMapping(value = "/resetPassword")
-    public ModelAndView resetPassword(@ModelAttribute(value = MODEL_RESET_PASSWORD) ResidentUsers resetPasswordObj, Model model) {
-        String methodName = Thread.currentThread().getStackTrace()[1].getMethodName();
-        LOGGER.info(MessageFormat.format(LOGGER_ENTRY, className, methodName));
-
-        ResidentUsers userDbObj = userRepository.findByEmailAddr(resetPasswordObj.getEmailAddr());
-
-        if (null == userDbObj) {
-            model.addAttribute(MODEL_MESSAGE, EMAIL_ADDRESS_DOES_NOT_EXISTS);
-            return new ModelAndView(VIEW_RESET_PASSWORD);
-        }
-
-        String encryptNewPass = ManageMyApartmentUtil.cryptWithMD5(resetPasswordObj.getPassword());
-        String encryptConfirmPass = ManageMyApartmentUtil.cryptWithMD5(resetPasswordObj.getConfirm_password());
-
-        if(encryptNewPass.equals(userDbObj.getPassword())){
-            model.addAttribute(MODEL_MESSAGE, INVALID_NEW_PASSWORD);
-            return new ModelAndView(VIEW_RESET_PASSWORD);
-        }
-
-        if (!encryptNewPass.equals(encryptConfirmPass)) {
-            model.addAttribute(MODEL_MESSAGE, INVALID_PASSWORD_MISMATCH);
-            return new ModelAndView(VIEW_RESET_PASSWORD);
-        }
-
-        userDbObj.setPassword(encryptNewPass);
-        userRepository.save(userDbObj);
-
-//        model.addAttribute(MODEL_RESET_PASS_SUCCESS, Boolean.TRUE);
-        model.addAttribute(MODEL_MESSAGE, MessageFormat.format(SUCCESS_MSG, PASSWORD, UPDATE));
-
-        recordAuditEntry(userDbObj.getEmailAddr(), MessageFormat.format(SUCCESS_MSG, PASSWORD, UPDATE),
-                PASSWORD + "_" + UPDATE);
-
-        LOGGER.info(MessageFormat.format(LOGGER_EXIT, className, methodName));
-        return new ModelAndView(VIEW_RESET_PASSWORD);
-    }
-
     private void recordAuditEntry(String emailAddress, String description, String label){
-        auditTrailLog.recordAuditTrailLog(RESIDENT_USERS,emailAddress, description, label,
+        manageMyApartmentUtil.recordAuditTrailLog(RESIDENT_USERS, emailAddress, description, label,
                 new Timestamp(System.currentTimeMillis()));
     }
 }

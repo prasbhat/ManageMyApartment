@@ -85,7 +85,7 @@ public class ReportsController implements ManageMyApartmentConstants {
 
             model.addAttribute(MODEL_REPORT_OBJ, reports);
             model.addAttribute(MODEL_IS_REPORT_TRANSACT, requestParam.equals(REPORT_DOC_TYPE.transact.name()));
-            mav = new ModelAndView(FOLDER_REPORTS + VIEW_MONTHLY_REPORT);
+            mav = new ModelAndView(FOLDER_REPORTS.concat(VIEW_MONTHLY_REPORT));
         }
 
         LOGGER.info(MessageFormat.format(LOGGER_EXIT, className, methodName));
@@ -171,7 +171,7 @@ public class ReportsController implements ManageMyApartmentConstants {
                         reportObj));
                 reportConfigMap.put(OBJ_DATA_LIST, transactionSummaryService.getTransactionByMonthYear(
                         reportObj.getSelectMonth(), reportObj.getExpenseType()));
-                reportConfigMap.put(REPORT_NAME, FOLDER_REPORTS + VIEW_TRX_SUMM_REPORT);
+                reportConfigMap.put(REPORT_NAME, FOLDER_REPORTS.concat(VIEW_TRX_SUMM_REPORT));
                 reportConfigMap.put(PDF_FILENAME, PDF_TRX_REPORTS);
                 reportConfigMap.put(TITLE_TEXT, reportObj.getSelectMonth());
                 reportConfigMap.put(MODEL_TOTAL_EXP_OBJ, transactionSummaryService.getTotalTransactionAmount(
@@ -180,7 +180,7 @@ public class ReportsController implements ManageMyApartmentConstants {
             case user:
                 reportConfigMap.put(MAV, userService.callGetAllUsers(userSessObj));
                 reportConfigMap.put(OBJ_DATA_LIST, userService.getAllUserList());
-                reportConfigMap.put(REPORT_NAME, FOLDER_REPORTS + VIEW_USER_REPORTS);
+                reportConfigMap.put(REPORT_NAME, FOLDER_REPORTS.concat(VIEW_USER_REPORTS));
                 reportConfigMap.put(PDF_FILENAME, PDF_USER_REPORTS);
                 break;
             case project:
@@ -188,7 +188,7 @@ public class ReportsController implements ManageMyApartmentConstants {
                         reportObj));
                 reportConfigMap.put(OBJ_DATA_LIST, projectedExpenseSummaryService.
                         getProjectedSummaryByMonthYear(reportObj.getSelectMonth()));
-                reportConfigMap.put(REPORT_NAME, FOLDER_REPORTS + VIEW_PROJECT_SUMMARY_REPORTS);
+                reportConfigMap.put(REPORT_NAME, FOLDER_REPORTS.concat(VIEW_PROJECT_SUMMARY_REPORTS));
                 reportConfigMap.put(PDF_FILENAME, PDF_PROJECTED_SUMMARY_REPORTS);
                 reportConfigMap.put(TITLE_TEXT, reportObj.getSelectMonth());
                 reportConfigMap.put(MODEL_FULL_MONTH_LIST, monthlyExpenseService.getMonthlyExpenseByMonthYear(

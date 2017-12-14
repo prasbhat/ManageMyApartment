@@ -64,8 +64,12 @@ public class TransactionSummaryService implements ManageMyApartmentConstants {
         return sumOfExpense;
     }
 
-    public ModelAndView callTransactionSummaryHome(ResidentUsers userSessObj, Model model, Reports reportObj) {
-       return transactionSummaryController.transactionSummaryHome(Boolean.TRUE.toString(), userSessObj,
+    public ModelAndView callTransactionSummaryHome(ResidentUsers residentUsers, Model model, Reports reportObj) {
+       return transactionSummaryController.transactionSummaryHome(Boolean.TRUE.toString(), residentUsers,
                 model, reportObj.getSelectMonth(), reportObj);
+    }
+
+    public ModelAndView callGetOneTransaction(ResidentUsers residentUsers) {
+        return transactionSummaryController.getOneTransaction(residentUsers);
     }
 }

@@ -6,6 +6,7 @@ import com.manage.apartment.model.ProjectedExpenseSummary;
 import com.manage.apartment.model.Reports;
 import com.manage.apartment.model.ResidentUsers;
 import com.manage.apartment.repository.ProjectedExpenseSummaryRepository;
+import com.manage.apartment.service.ProjectedExpenseSummaryService;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
@@ -25,7 +26,7 @@ import static com.manage.apartment.Util.ManageMyApartmentConstants.MODEL_LOGIN_U
  */
 @RestController
 @SessionAttributes(MODEL_LOGIN_USER)
-public class ProjectedExpenseSummaryController  implements ManageMyApartmentConstants {
+public class ProjectedExpenseSummaryController implements ManageMyApartmentConstants {
 
     private static final Logger LOGGER = Logger.getLogger(ProjectedExpenseSummaryController.class);
     private String className = this.getClass().getSimpleName();
@@ -36,11 +37,8 @@ public class ProjectedExpenseSummaryController  implements ManageMyApartmentCons
     }
 
     @Autowired
-    ProjectedExpenseSummaryRepository projectedExpenseSummaryRepository;
+    ProjectedExpenseSummaryService prjExpSummService;
 
-//    @Autowired
-//    SuperAdminController auditTrailLogController;
-//
     @Autowired
     MonthlyExpenseController monthlyExpenseController;
 
@@ -52,7 +50,7 @@ public class ProjectedExpenseSummaryController  implements ManageMyApartmentCons
     @GetMapping(value = "/projectedExpenseSummary")
     public ModelAndView projectedExpenseSummaryHome(@RequestParam(value = REPORTS_PARAM) String requestParam,
                                                     @ModelAttribute(value = MODEL_LOGIN_USER) ResidentUsers userSessObj,
-                                                 Model model, String reportMonthYear, Reports reportObj) {
+                                                    Model model, String reportMonthYear, Reports reportObj) {
         String methodName = Thread.currentThread().getStackTrace()[1].getMethodName();
         LOGGER.info(MessageFormat.format(LOGGER_ENTRY, className, methodName));
         ModelAndView mav = ManageMyApartmentUtil.isUserAuthenticated(userSessObj);
@@ -63,21 +61,19 @@ public class ProjectedExpenseSummaryController  implements ManageMyApartmentCons
             if (requestParam.equalsIgnoreCase(Boolean.TRUE.toString())) {
                 model.addAttribute(REPORTS_PAGE, Boolean.TRUE);
                 model.addAttribute(MODEL_CURR_MONTH_YEAR, reportMonthYear);
-                projectedExpenseSummaryList = projectedExpenseSummaryRepository.findByPrjExpSummMthYr(reportMonthYear);
+                projectedExpenseSummaryList = prjExpSummService.getProjectedSummaryByMonthYear(reportMonthYear);
             } else {
                 model.addAttribute(REPORTS_PAGE, Boolean.FALSE);
                 model.addAttribute(MODEL_CURR_MONTH_YEAR, currYearMonth);
-                projectedExpenseSummaryList = projectedExpenseSummaryRepository.findByPrjExpSummMthYr(currYearMonth);
+                projectedExpenseSummaryList = prjExpSummService.getProjectedSummaryByMonthYear(currYearMonth);
             }
             model.addAttribute(MODEL_REPORT_OBJ, reportObj);
             model.addAttribute(MODEL_PRJ_EXP_SUMM_OBJ_LIST, projectedExpenseSummaryList);
-//            model.addAttribute(MODEL_CURR_MONTH_YEAR, currYearMonth);
-//            model.addAttribute(MODEL_PRJ_EXP_SUMM_OBJ_LIST, projectedExpenseSummaryRepository.findByPrjExpSummMthYr(currYearMonth));
 
             model.addAttribute(MODEL_PRJ_EXP_SUMM_OBJ, new ProjectedExpenseSummary());
             model.addAttribute(MODEL_IS_PROJECTED_ALLLOWED, (new Timestamp(System.currentTimeMillis())
                     .toLocalDateTime().getDayOfMonth() <= 5));
-            model.addAttribute(MODEL_PRJ_EXP_SUMM_HIST_OBJ_LIST, projectedExpenseSummaryRepository.findAll());
+            model.addAttribute(MODEL_PRJ_EXP_SUMM_HIST_OBJ_LIST, prjExpSummService.getAllProjectSummary());
 
             model.addAttribute(MODEL_IS_SUPER_ADMIN, ManageMyApartmentUtil.isUserSuperAdmin(userSessObj));
             model.addAttribute(MODEL_IS_ADMIN, ManageMyApartmentUtil.isUserAdmin(userSessObj));
@@ -98,9 +94,9 @@ public class ProjectedExpenseSummaryController  implements ManageMyApartmentCons
 
         Map<String, String> bindErrorsMap = new HashMap<>();
 
-        if(!manageMyApartmentUtil.isMonthFreezed(projectedExpenseSummary.getPrjExpSummMthYr())){
+        if (!manageMyApartmentUtil.isMonthFreezed(projectedExpenseSummary.getPrjExpSummMthYr())) {
             projectedExpenseSummary.setCreationDate(new Timestamp(System.currentTimeMillis()));
-            projectedExpenseSummaryRepository.save(projectedExpenseSummary);
+            prjExpSummService.createProjectSummary(projectedExpenseSummary);
             totalAmountCalculation(model);
 
             recordAuditLogEntry(userSessObj.getEmailAddr(),
@@ -124,9 +120,9 @@ public class ProjectedExpenseSummaryController  implements ManageMyApartmentCons
         Map<String, String> bindErrorsMap = new HashMap<>();
 
         try {
-            ProjectedExpenseSummary projectedExpenseSummary = projectedExpenseSummaryRepository.findOne(prjExpSummId);
+            ProjectedExpenseSummary projectedExpenseSummary = prjExpSummService.getOneProjectSummary(prjExpSummId);
 
-            projectedExpenseSummaryRepository.delete(projectedExpenseSummary);
+            prjExpSummService.deleteProjectedSumamry(projectedExpenseSummary);
             totalAmountCalculation(model);
 
             recordAuditLogEntry(userSessObj.getEmailAddr(),
@@ -147,15 +143,15 @@ public class ProjectedExpenseSummaryController  implements ManageMyApartmentCons
 
     @GetMapping(value = "/calculateExpense")
     public ModelAndView calculateTotalExpense(@ModelAttribute(value = MODEL_LOGIN_USER) ResidentUsers userSessObj,
-                                      Model model){
+                                              Model model) {
         String methodName = Thread.currentThread().getStackTrace()[1].getMethodName();
         LOGGER.info(MessageFormat.format(LOGGER_ENTRY, className, methodName));
         float sumOfExpense = 0;
 
-        List<ProjectedExpenseSummary> projectedExpenseSummaryList = projectedExpenseSummaryRepository.
-                findByPrjExpSummMthYr(currYearMonth);
+        List<ProjectedExpenseSummary> projectedExpenseSummaryList = prjExpSummService.getProjectedSummaryByMonthYear(
+                currYearMonth);
 
-        for(ProjectedExpenseSummary prjExpSummModel : projectedExpenseSummaryList){
+        for (ProjectedExpenseSummary prjExpSummModel : projectedExpenseSummaryList) {
             sumOfExpense += prjExpSummModel.getPrjExpSummAmt();
         }
 
@@ -166,16 +162,16 @@ public class ProjectedExpenseSummaryController  implements ManageMyApartmentCons
         return monthlyExpenseController.freezeMonthPage(userSessObj, model);
     }
 
-    private void totalAmountCalculation(Model model){
+    private void totalAmountCalculation(Model model) {
         String methodName = Thread.currentThread().getStackTrace()[1].getMethodName();
         LOGGER.info(MessageFormat.format(LOGGER_ENTRY, className, methodName));
         float sumOfExpense = 0;
 
-        List<ProjectedExpenseSummary> projectedExpenseSummaryList = projectedExpenseSummaryRepository.
-                findByPrjExpSummMthYr(currYearMonth);
+        List<ProjectedExpenseSummary> projectedExpenseSummaryList = prjExpSummService.getProjectedSummaryByMonthYear(
+                currYearMonth);
 
-        for(ProjectedExpenseSummary prjExpSummModel : projectedExpenseSummaryList){
-                sumOfExpense += prjExpSummModel.getPrjExpSummAmt();
+        for (ProjectedExpenseSummary prjExpSummModel : projectedExpenseSummaryList) {
+            sumOfExpense += prjExpSummModel.getPrjExpSummAmt();
         }
 
         model.addAttribute(MODEL_TOTAL_EXP_OBJ, sumOfExpense);
@@ -184,6 +180,6 @@ public class ProjectedExpenseSummaryController  implements ManageMyApartmentCons
 
     private void recordAuditLogEntry(String emailAddress, String description, String label) {
         manageMyApartmentUtil.recordAuditTrailLog(PROJECTED_EXPENSE_SUMMARY, emailAddress, description,
-                PROJECTED_EXPENSE_SUMMARY + "_"+label, new Timestamp(System.currentTimeMillis()));
+                PROJECTED_EXPENSE_SUMMARY.concat(UNDER_SCORE + label), new Timestamp(System.currentTimeMillis()));
     }
 }

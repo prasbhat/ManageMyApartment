@@ -36,4 +36,19 @@ public class ProjectedExpenseSummaryService implements ManageMyApartmentConstant
         return projectedExpenseSummaryRepository.findByPrjExpSummMthYr(monthYear);
     }
 
+    public List<ProjectedExpenseSummary> getAllProjectSummary() {
+        return (List<ProjectedExpenseSummary>) projectedExpenseSummaryRepository.findAll();
+    }
+
+    public void createProjectSummary(ProjectedExpenseSummary projectedExpenseSummary) {
+        projectedExpenseSummaryRepository.save(projectedExpenseSummary);
+    }
+
+    public ProjectedExpenseSummary getOneProjectSummary(int systemId) {
+        return projectedExpenseSummaryRepository.findOne(systemId);
+    }
+
+    public void deleteProjectedSumamry(ProjectedExpenseSummary projectedExpenseSummary) {
+        projectedExpenseSummaryRepository.delete(projectedExpenseSummary);
+    }
 }

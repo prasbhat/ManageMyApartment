@@ -31,8 +31,6 @@ public class TransactionSummaryController implements ManageMyApartmentConstants 
 
     private static final Logger LOGGER = Logger.getLogger(TransactionSummaryController.class);
     private String className = this.getClass().getSimpleName();
-//    @Autowired
-//    private TransactionSummaryRepository transactionSummaryRepository;
 
     @Autowired
     TransactionSummaryService transactionSummaryService;
@@ -100,7 +98,6 @@ public class TransactionSummaryController implements ManageMyApartmentConstants 
             mav = new ModelAndView(VIEW_TRANSACTION_SUMMARY, MODEL_USER_OBJ, userSessObj);
         }
 
-//        totalTransactionAmountCalculation(model);
         model.addAttribute(MODEL_TOTAL_EXP_OBJ, transactionSummaryService.getTotalTransactionAmount(currYearMonth));
 
         LOGGER.info(MessageFormat.format(LOGGER_EXIT, className, methodName));
@@ -125,7 +122,7 @@ public class TransactionSummaryController implements ManageMyApartmentConstants 
             transactionSummaryObj.setCreationDate(new Timestamp(System.currentTimeMillis()));
             transactionSummaryObj.setMonthYear(transactionSummaryObj.getDate().toString().substring(0, 7));
 
-            if(null != transactionSummaryObj.getUploadFile().getFilename()){
+            if(null != transactionSummaryObj.getUploadFile()){
                 UploadFile uploadFile = ManageMyApartmentUtil.uploadFileDetails(transactionSummaryObj.
                         getUploadFile(), REPORT_DOC_TYPE.transact.name());
                 transactionSummaryObj.setUploadFile(uploadFile);
@@ -140,8 +137,7 @@ public class TransactionSummaryController implements ManageMyApartmentConstants 
             }
 
             recordAuditLogEntry(userSessObj.getEmailAddr(),
-                    transactionSummaryObj.getDescription() + STRING_OF + transactionSummaryObj.getAmount(),
-                    CREATE);
+                    transactionSummaryObj.getDescription().concat(STRING_OF + transactionSummaryObj.getAmount()), CREATE);
         } else {
             bindErrorsMap.put(KEY_ERRORS, MessageFormat.format(MONTH_FREEZE,
                     transactionSummaryObj.getDate().toString()));
@@ -169,12 +165,10 @@ public class TransactionSummaryController implements ManageMyApartmentConstants 
                         transactionSummaryObj.getAmount(), Boolean.FALSE);
             }
             transactionSummaryService.deleteTransaction(transactionId);
-//            totalTransactionAmountCalculation(model);
             model.addAttribute(MODEL_TOTAL_EXP_OBJ, transactionSummaryService.getTotalTransactionAmount(currYearMonth));
 
             recordAuditLogEntry(userSessObj.getEmailAddr(),
-                    transactionSummaryObj.getDescription() + STRING_OF + transactionSummaryObj.getAmount(),
-                    DELETE);
+                    transactionSummaryObj.getDescription().concat(STRING_OF + transactionSummaryObj.getAmount()), DELETE);
         } catch (Exception ex) {
             bindErrorsMap.put(KEY_ERRORS, ex.toString());
         }
@@ -189,25 +183,12 @@ public class TransactionSummaryController implements ManageMyApartmentConstants 
         return callTransactionSummaryHome(userSessObj, model);
     }
 
-//    @RequestMapping(value = "getReceiptPdf", method = RequestMethod.GET)
-//    public ResponseEntity<byte[]> viewPDF(@RequestParam(value = "transactionId") int transactionId) {
-////    public ResponseEntity<byte[]> viewPDF(@PathVariable(value = "transactionId") int transactionId) {
-//        String methodName = Thread.currentThread().getStackTrace()[1].getMethodName();
-//        LOGGER.info(MessageFormat.format(LOGGER_ENTRY, className, methodName));
-//
-//        TransactionSummary transactionSummary = transactionSummaryService.getOneTransactionSummary(transactionId);
-//
-//        ResponseEntity<byte[]> response = ManageMyApartmentUtil.retrieveFileDetails(transactionSummary.getUploadFile());
-//        LOGGER.info(MessageFormat.format(LOGGER_EXIT, className, methodName));
-//        return response;
-//    }
-
     private ModelAndView callTransactionSummaryHome(ResidentUsers userSessObj, Model model){
         return transactionSummaryHome(Boolean.FALSE.toString(), userSessObj, model, currYearMonth, new Reports());
     }
 
     private void recordAuditLogEntry(String emailAddress, String description, String label) {
         manageMyApartmentUtil.recordAuditTrailLog(TRANSACTION_SUMMARY, emailAddress, description,
-                TRANSACTION + UNDER_SCORE + label, new Timestamp(System.currentTimeMillis()));
+                TRANSACTION.concat(UNDER_SCORE + label), new Timestamp(System.currentTimeMillis()));
     }
 }

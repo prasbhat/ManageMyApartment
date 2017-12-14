@@ -3,22 +3,6 @@
       layout:decorator="Layouts/MenuLayout" xmlns:dt="http://www.thymeleaf.org/dandelion/datatables">
 <head>
     <meta charset="UTF-8"/>
-
-    <script th:inline="javascript">
-    /*<![CDATA[*/
-        $(document).ready(function () {
-            $(".open-UserDetailsDialog").click(function () {
-                alert($(this).data('flatNumber'));
-                $('#modalFlatNumber').val($(this).data('flatNumber'));
-                $('#userDetailsModal').show();
-            });
-        });
-    /*]]>*/
-
-
-
-
-    </script>
 </head>
 <body class="dt_example">
 

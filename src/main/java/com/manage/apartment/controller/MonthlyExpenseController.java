@@ -29,9 +29,6 @@ public class MonthlyExpenseController implements ManageMyApartmentConstants {
     private static final Logger LOGGER = Logger.getLogger(MonthlyExpenseController.class);
     private String className = this.getClass().getSimpleName();
 
-//    @Autowired
-//    MonthlyExpenseRepository monthlyExpenseRepository;
-
     @Autowired
     MonthlyExpenseService monthlyExpenseService;
 
@@ -84,7 +81,7 @@ public class MonthlyExpenseController implements ManageMyApartmentConstants {
             monthlyExpense.setUpdationDate(new Timestamp(System.currentTimeMillis()));
             monthlyExpenseService.createMonthlyExpense(monthlyExpense);
 
-            recordAuditLogEntry(userSessObj.getEmailAddr(), monthlyExpense.getMonthYear() + FREEZE,
+            recordAuditLogEntry(userSessObj.getEmailAddr(), monthlyExpense.getMonthYear().concat(FREEZE),
                     CREATE);
         } else {
             LOGGER.error(DUPLICATE_MONTH_ENTRY);
@@ -116,8 +113,8 @@ public class MonthlyExpenseController implements ManageMyApartmentConstants {
             monthlyExpense.setUpdationDate(new Timestamp(System.currentTimeMillis()));
             monthlyExpenseService.createMonthlyExpense(monthlyExpense);
 
-            recordAuditLogEntry(userSessObj.getEmailAddr(), monthlyExpense.getMonthYear() + FREEZE +" = " +
-                            monthlyExpense.isFreeze(), UPDATE);
+            recordAuditLogEntry(userSessObj.getEmailAddr(), monthlyExpense.getMonthYear().concat(FREEZE +STRING_EQUAL +
+                            monthlyExpense.isFreeze()), UPDATE);
 
             model.addAttribute(MODEL_FULL_MONTH_LIST, monthlyExpenseService.findAllMonthlyExpense());
 
@@ -138,13 +135,14 @@ public class MonthlyExpenseController implements ManageMyApartmentConstants {
         monthlyExpense.setTotalExpense(totalExpense);
         monthlyExpense.setCreationDate(new Timestamp(System.currentTimeMillis()));
         monthlyExpense.setUpdationDate(new Timestamp(System.currentTimeMillis()));
-        monthlyExpense.setNoOfFlats(userController.getNoOfFlats(currMonth));
+        int noOfFlats = userController.getNoOfFlats(currMonth);
+        monthlyExpense.setNoOfFlats(noOfFlats);
         monthlyExpense.setOldMonthlyMaint(monthlyExpense.getMonthlyMaint());
-        monthlyExpense.setMonthlyMaint((int) totalExpense / userController.getNoOfFlats(currMonth));
+        monthlyExpense.setMonthlyMaint((int) totalExpense / noOfFlats);
         monthlyExpense.setFreeze(Boolean.FALSE);
 
         float monthlyMaint = (monthlyExpense.getMonthlyMaint() - monthlyExpense.getOldMonthlyMaint());
-        userController.updatePendingAmount(0, monthlyMaint, false);
+        userController.updatePendingAmount(NUMBER_ZERO, monthlyMaint, Boolean.FALSE);
 
         monthlyExpenseService.createMonthlyExpense(monthlyExpense);
 
@@ -165,7 +163,7 @@ public class MonthlyExpenseController implements ManageMyApartmentConstants {
     }
 
     private void recordAuditLogEntry(String emailAddress, String description, String label) {
-        manageMyApartmentUtil.recordAuditTrailLog(FREEZED_MONTH, emailAddress, description, FREEZE + "_"+label,
-                new Timestamp(System.currentTimeMillis()));
+        manageMyApartmentUtil.recordAuditTrailLog(FREEZED_MONTH, emailAddress, description, FREEZE.concat(
+                UNDER_SCORE+label), new Timestamp(System.currentTimeMillis()));
     }
 }

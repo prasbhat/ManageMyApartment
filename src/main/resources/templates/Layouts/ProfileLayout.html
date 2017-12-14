@@ -7,85 +7,6 @@
 </head>
 <body>
 <section th:fragment="user-profile-content">
-    <!--<div id="profileDiv" th:if="${userObj != null}" align="center">-->
-    <!--<h1>Given below are your personal details</h1>-->
-    <!--<div th:if="${!isAdmin}">-->
-    <!--<a href="#" th:href="@{/edit/{userId}/(userId=${userObj.systemUserId})}">Click Here to Edit the Details</a>-->
-    <!--</div>-->
-    <!--<table class="table-striped">-->
-    <!--<tr class="success">-->
-    <!--<th>Flat Number</th>-->
-    <!--<td th:text="${userObj.flatNumber}"></td>-->
-    <!--</tr>-->
-    <!--<tr class="info">-->
-    <!--<th>First Name</th>-->
-    <!--<td th:text="${userObj.firstname}"></td>-->
-    <!--</tr>-->
-    <!--<tr class="success">-->
-    <!--<th>Last Name</th>-->
-    <!--<td th:text="${userObj.lastname}"></td>-->
-    <!--</tr>-->
-    <!--<tr class="info">-->
-    <!--<th>Email Address/Username</th>-->
-    <!--<td th:text="${userObj.emailAddr}"></td>-->
-    <!--</tr>-->
-    <!--<tr class="success">-->
-    <!--<th>Phone Number</th>-->
-    <!--<td th:text="${userObj.phoneNbr}"></td>-->
-    <!--</tr>-->
-    <!--<tr class="info">-->
-    <!--<th>Secondary Email Address</th>-->
-    <!--<td th:text="${userObj.additionalUserDetails.secondEmailAddr}"></td>-->
-    <!--</tr>-->
-    <!--<tr class="success">-->
-    <!--<th>Alternate Phone Number</th>-->
-    <!--<td th:text="${userObj.additionalUserDetails.altPhoneNbr}"></td>-->
-    <!--</tr>-->
-    <!--<tr class="info">-->
-    <!--<th>Resident Status</th>-->
-    <!--<td th:text="${userObj.additionalUserDetails.residentStatus}"></td>-->
-    <!--</tr>-->
-    <!--<tr class="success">-->
-    <!--<th>Residing Since</th>-->
-    <!--<td th:text="${userObj.residingSince}"></td>-->
-    <!--</tr>-->
-    <!--<tr class="info">-->
-    <!--<th>Number Of People Residing</th>-->
-    <!--<td th:text="${userObj.additionalUserDetails.noOfPpl}"></td>-->
-    <!--</tr>-->
-    <!--<tr class="success">-->
-    <!--<th>Pending Maintenance Amount</th>-->
-    <!--<td th:text="${userObj.pendingAmount}"></td>-->
-    <!--</tr>-->
-    <!--</table>-->
-    <!--<a href="#" id="owner-details">Click to check Owner Details</a>&nbsp;<br/>-->
-    <!--<table class="table-striped" id="ownerDetails" style="display:none;">-->
-    <!--<tr class="info">-->
-    <!--<th>Owner Firstname</th>-->
-    <!--<td th:text="${userObj.ownerDetails.ownerFirstname}"></td>-->
-    <!--</tr>-->
-    <!--<tr class="success">-->
-    <!--<th>Owner Lastname</th>-->
-    <!--<td th:text="${userObj.ownerDetails.ownerLastname}"></td>-->
-    <!--</tr>-->
-    <!--<tr class="info">-->
-    <!--<th>Owner Phone number</th>-->
-    <!--<td th:text="${userObj.ownerDetails.ownerPhoneNbr}"></td>-->
-    <!--</tr>-->
-    <!--<tr class="success">-->
-    <!--<th>Owner Email Address</th>-->
-    <!--<td th:text="${userObj.ownerDetails.ownerEmailAddr}"></td>-->
-    <!--</tr>-->
-    <!--<tr class="info">-->
-    <!--<th>Owner Address of Residence</th>-->
-    <!--<td th:text="${userObj.ownerDetails.ownerAddr}"></td>-->
-    <!--</tr>-->
-    <!--</table>-->
-    <!--<br/>-->
-    <!--<span style="color:red;font-weight:bold;">-->
-    <!--Pending Maintenance Amount : <span th:text="${userObj.pendingAmount}"></span>-->
-    <!--</span>-->
-    <!--</div>-->
     <div class="modal fade" th:id="${userObjData.systemUserId}" aria-labelledby="tiketLabel"
          role="dialog" aria-hidden="true">
         <div class="modal-dialog modal-lg">
@@ -183,7 +104,7 @@
                         </span>
                     </table>
                 </div>
-                <div class="modal-footer">
+                <div class="modal-footer" th:if="${userObjData.additionalUserDetails.userRole != 'SUPER_ADMIN'}">
                     <table width="100%">
                         <tr>
                             <td colspan="2" align="center">

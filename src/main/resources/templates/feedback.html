@@ -19,7 +19,7 @@
 </head>
 <body>
 <section layout:fragment="custom-main-content">
-    <p th:text="${successMsg}" class="error-message"> success message</p>
+    <p th:text="${message}" class="error-message"> success message</p>
     <form id="complaintsForm" th:action="@{/addEditFeedback}" th:object="${feedbackObj}" method="post"
           class="form-register" th:if="${!isAdmin}">
         <table class="table table-striped">
