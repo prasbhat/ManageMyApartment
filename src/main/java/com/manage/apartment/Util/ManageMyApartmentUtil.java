@@ -19,7 +19,6 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletResponse;
-import javax.validation.ConstraintViolation;
 import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -69,7 +68,7 @@ public class ManageMyApartmentUtil implements ManageMyApartmentConstants {
         String methodName = Thread.currentThread().getStackTrace()[1].getMethodName();
         LOGGER.info(MessageFormat.format(LOGGER_ENTRY, className, methodName));
         try {
-            md = MessageDigest.getInstance("MD5");
+            md = MessageDigest.getInstance(MD5);
             byte[] passBytes = pass.getBytes();
             md.reset();
             byte[] digested = md.digest(passBytes);
@@ -113,6 +112,7 @@ public class ManageMyApartmentUtil implements ManageMyApartmentConstants {
         model.addAttribute("residentStatusList", residentStatusList);
 
         ArrayList<?> userRoleList = new ArrayList<>(Arrays.asList(USER_ROLE.values()));
+        userRoleList.remove(USER_ROLE.SUPER_ADMIN);
         model.addAttribute("userRoleList", userRoleList);
 
         ArrayList<?> isActiveList = new ArrayList<>(Arrays.asList(IS_ACTIVE.values()));
@@ -161,29 +161,9 @@ public class ManageMyApartmentUtil implements ManageMyApartmentConstants {
         return Boolean.FALSE;
     }
 
-    public static Boolean printHibernateValidatorConstraints(Set<ConstraintViolation<ResidentUsers>> constraintViolations,
-                                                             Model model) {
-        String methodName = Thread.currentThread().getStackTrace()[1].getMethodName();
-        LOGGER.info(MessageFormat.format(LOGGER_ENTRY, className, methodName));
-        Map<String, String> bindErrorsMap = new HashMap<>();
-
-        if (constraintViolations.size() > 0) {
-            for (ConstraintViolation violations : constraintViolations) {
-                bindErrorsMap.put(violations.getPropertyPath().toString(), violations.getMessage());
-            }
-            model.addAttribute(MODEL_BIND_ERRORS, bindErrorsMap);
-            return Boolean.TRUE;
-        }
-
-        LOGGER.info(MessageFormat.format(LOGGER_EXIT, className, methodName));
-        return Boolean.FALSE;
-    }
-
     public static UploadFile uploadFileDetails(UploadFile uploadFile, String docUploadType) {
         String methodName = Thread.currentThread().getStackTrace()[1].getMethodName();
         LOGGER.info(MessageFormat.format(LOGGER_ENTRY, className, methodName));
-
-//        UploadFile uploadFile = new UploadFile();
 
         try {
             MultipartFile inputFile = uploadFile.getTempFile();
@@ -193,7 +173,6 @@ public class ManageMyApartmentUtil implements ManageMyApartmentConstants {
                 uploadFile.setFilename(inputFile.getOriginalFilename().substring(0,
                         inputFile.getOriginalFilename().lastIndexOf(STRING_PERIOD)));
 
-//            uploadFile.setFilename(filename);
             uploadFile.setFileData(byteArr);
             uploadFile.setCreationDate(new Timestamp(System.currentTimeMillis()));
             uploadFile.setUpdationDate(new Timestamp(System.currentTimeMillis()));
@@ -216,16 +195,16 @@ public class ManageMyApartmentUtil implements ManageMyApartmentConstants {
         byte[] filePdfBytes = outputFile.getFileData();
 
         headers.setContentType(MediaType.parseMediaType(MediaType.APPLICATION_PDF_VALUE));
-        headers.add(HttpHeaders.CONTENT_DISPOSITION, "inline;filename=" + filename);
-        headers.setCacheControl("must-revalidate, post-check=0, pre-check=0");
-        ResponseEntity<byte[]> response = new ResponseEntity<byte[]>(filePdfBytes, headers, HttpStatus.OK);
+        headers.add(HttpHeaders.CONTENT_DISPOSITION, INLINE_FILENAME + filename);
+        headers.setCacheControl(SET_CACHE_CONTROL);
+        ResponseEntity<byte[]> response = new ResponseEntity<>(filePdfBytes, headers, HttpStatus.OK);
 
         LOGGER.info(MessageFormat.format(LOGGER_EXIT, className, methodName));
         return response;
     }
 
     public static Date getFormattedDate(String inputDate) {
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-mm-dd");
+        SimpleDateFormat formatter = new SimpleDateFormat(GET_DATE_PATTERN);
         Date formattedDate = new Date();
         try {
             formattedDate = formatter.parse(inputDate);

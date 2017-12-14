@@ -126,7 +126,7 @@ public class TransactionSummaryController implements ManageMyApartmentConstants 
 
             if(null != transactionSummaryObj.getUploadFile().getFilename()){
                 UploadFile uploadFile = ManageMyApartmentUtil.uploadFileDetails(transactionSummaryObj.
-                        getUploadFile(), DOC_UPLOAD_TYPE.transact.name());
+                        getUploadFile(), REPORT_DOC_TYPE.transact.name());
                 transactionSummaryObj.setUploadFile(uploadFile);
             }
 

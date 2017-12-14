@@ -13,7 +13,6 @@ public interface ManageMyApartmentConstants {
 
     //Constants
     int DEFAULT_AMOUNT = 1000;
-    String STRING_EMPTY = "";
     String STRING_OF = " of ";
     String UNDER_SCORE = "_";
     String STRING_PERIOD = ".";
@@ -27,6 +26,7 @@ public interface ManageMyApartmentConstants {
     String TRANSACTION = "Transaction";
     String FREEZE = "Freeze";
     String REGISTER = "Register";
+    String UPLOAD = "Upload";
 
     //Error messages
     String INVALID_LOGIN = "Invalid credentials";
@@ -40,6 +40,7 @@ public interface ManageMyApartmentConstants {
     String INVALID_DATE = "Date cannot be after current date";
     String INVALID_PHONE_NUMBER = "should contain only numbers";
     String INVALID_NO_OF_PPL = "cannot be 0";
+    String INVALID_FILE_SIZE = "File size should be less the n 5 MB";
 
     //Key names
     String KEY_ERRORS = "Errors";
@@ -64,22 +65,26 @@ public interface ManageMyApartmentConstants {
     String REG_DTL_TXT = "regDtlText";
     String ADDR_TEXT = "addrText";
 
+    String MD5 = "MD5";
     String FILE_PDF_EXTENSION = ".pdf";
     String DATE_PATTERN = "yyyyMMddHHmmss";
+    String GET_DATE_PATTERN = "yyyy-mm-dd";
     String FOLDER_REPORTS = "Reports/";
     String REPORTS_PARAM = "reports";
     String REPORTS_PAGE = "reportsPage";
     String PDF_USER_REPORTS = "User_Report_";
     String PDF_TRX_REPORTS = "Trans_Summ_Report_";
     String PDF_PROJECTED_SUMMARY_REPORTS = "Prj_Summ_Report_";
-    String CONTENT_DISPOSITION = "Content-Disposition";
     String ATTACHMENT_FILENAME = "attachment; filename=";
+    String INLINE_FILENAME = "inline;filename=";
+    String SET_CACHE_CONTROL = "must-revalidate, post-check=0, pre-check=0";
 
     //Table (Entity) Names
     String RESIDENT_USERS = "ResidentUsers";
     String TRANSACTION_SUMMARY = "TransactionSummary";
     String PROJECTED_EXPENSE_SUMMARY = "ProjectedExpenseSummary";
     String FREEZED_MONTH = "MonthlyExpense";
+    String UPLOAD_FILE = "UploadFile";
 
     //Model Names
     String MODEL_LOGIN_USER = "loggedInUser";
@@ -89,17 +94,13 @@ public interface ManageMyApartmentConstants {
     String MODEL_RESET_PASSWORD = "resetPassword";
     String MODEL_LOGIN_ERROR = "loginError";
     String MODEL_MESSAGE = "message";
-    String MODEL_RESET_PASS_SUCCESS = "resetPasswordSuccess";
     String MODEL_UPDATE_USER_OBJ = "updateUserObj";
     String MODEL_USER_OBJ_LIST = "userObjList";
     String MODEL_BIND_ERRORS = "bindErrors";
     String MODEL_TRX_SUMM_LIST = "transactionSummaryList";
     String MODEL_TRX_SUMM_HIST_LIST = "transactionSummaryHistList";
     String MODEL_NEW_TRX_OBJ = "newTransactionObj";
-    String MODEL_TRX_SUMM_REPORTS_OBJ = "transactionSummaryReportsObj";
     String MODEL_REPORT_OBJ = "reportObj";
-    String MODEL_MAINT_OBJ_LIST = "maintObjList";
-    String MODEL_MAINT_OBJ = "maintObj";
     String MODEL_PRJ_EXP_SUMM_OBJ = "prjExpSummObj";
     String MODEL_PRJ_EXP_SUMM_OBJ_LIST = "prjExpSummObjList";
     String MODEL_PRJ_EXP_SUMM_HIST_OBJ_LIST = "prjExpSummHistObjList";
@@ -121,9 +122,7 @@ public interface ManageMyApartmentConstants {
     String VIEW_TRANSACTION_SUMMARY = "transactionSummary";
     String VIEW_MONTHLY_REPORT = "monthlyReport";
     String VIEW_TRX_SUMM_REPORT = "transactionSummaryReport";
-    String VIEW_MAINT_OBJ_SUMMARY = "maintObjSummary";
     String VIEW_PROJECTED_EXPENSE_SUMMARY = "projectedExpenseSummary";
-//    String VIEW_PRJ_SUMM_MONTHLY_REPORT = "transactionSummaryMonthlyReport";
     String VIEW_MONTHLY_EXPENSE = "monthlyExpense";
     String VIEW_USER_REPORTS = "userReports";
     String VIEW_PROJECT_SUMMARY_REPORTS = "projectedSummaryReport";
@@ -150,7 +149,5 @@ public interface ManageMyApartmentConstants {
 
     enum VIEW_STATUS {VIEW, DOWNLOAD}
 
-    enum REPORT_TYPE {transact, project, user}
-
-    enum DOC_UPLOAD_TYPE {user, transact, super_admin}
+    enum REPORT_DOC_TYPE {transact, project, user, super_admin}
 }

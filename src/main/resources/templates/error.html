@@ -21,7 +21,9 @@
         <b>Cause:</b> <span th:text="${exception}">exception ...</span>
     </div>
 
-    <div th:utext="${fullReport}" />
+    <div style="display:none;">
+        Full Error Trace: <span th:utext="${fullReport}"></span>
+    </div>
 
      <a href="login.html" th:href="@{/login}">Back to Home Page</a>
 </section>

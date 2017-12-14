@@ -146,7 +146,7 @@ public class ReportsController implements ManageMyApartmentConstants {
         LOGGER.info(MessageFormat.format(LOGGER_ENTRY, className, methodName));
 
         UploadFile fileForView = new UploadFile();
-        switch (DOC_UPLOAD_TYPE.valueOf(docUploadType)) {
+        switch (REPORT_DOC_TYPE.valueOf(docUploadType)) {
             case super_admin:
                 fileForView = superAdminService.getOneUploadFile(systemId);
                 break;
@@ -167,7 +167,7 @@ public class ReportsController implements ManageMyApartmentConstants {
 
     private void getUtilInfo(Reports reportObj, Model model, ResidentUsers userSessObj) {
 
-        switch (REPORT_TYPE.valueOf(reportObj.getReportsType())) {
+        switch (REPORT_DOC_TYPE.valueOf(reportObj.getReportsType())) {
             case transact:
                 reportConfigMap.put(MAV, transactionSummaryController.transactionSummaryHome(Boolean.TRUE.toString(), userSessObj,
                         model, reportObj.getSelectMonth(), reportObj));

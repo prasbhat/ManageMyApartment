@@ -118,7 +118,7 @@ public class UserController implements ManageMyApartmentConstants {
                 mav.addObject(REPORTS_PAGE, Boolean.TRUE);
 
                 Reports reports = new Reports();
-                reports.setReportsType(REPORT_TYPE.user.name());
+                reports.setReportsType(REPORT_DOC_TYPE.user.name());
                 mav.addObject(MODEL_REPORT_OBJ, reports);
             } else {
                 mav.addObject(REPORTS_PAGE, Boolean.FALSE);
@@ -253,7 +253,7 @@ public class UserController implements ManageMyApartmentConstants {
                         uploadFile.setUpdationDate(new Timestamp(System.currentTimeMillis()));
                     } else {
                         uploadFile = ManageMyApartmentUtil.uploadFileDetails(userObjData.getAdditionalUserDetails()
-                                .getUploadFile(), DOC_UPLOAD_TYPE.user.name());
+                                .getUploadFile(), REPORT_DOC_TYPE.user.name());
                     }
 
                     userObjData.getAdditionalUserDetails().setUploadFile(uploadFile);
@@ -322,7 +322,7 @@ public class UserController implements ManageMyApartmentConstants {
         LOGGER.info(MessageFormat.format(LOGGER_ENTRY, className, methodName));
 
         UploadFile uploadFile = ManageMyApartmentUtil.uploadFileDetails(registeringUser.getAdditionalUserDetails().
-                getUploadFile(), DOC_UPLOAD_TYPE.user.name());
+                getUploadFile(), REPORT_DOC_TYPE.user.name());
         registeringUser.getAdditionalUserDetails().setUploadFile(uploadFile);
         registeringUser.getAdditionalUserDetails().setUserRole(USER_ROLE.USER.toString());
         registeringUser.getAdditionalUserDetails().setIsActive(Boolean.TRUE);

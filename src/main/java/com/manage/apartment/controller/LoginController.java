@@ -86,8 +86,8 @@ public class LoginController implements ManageMyApartmentConstants {
 
             mav = transactionSummaryController.getOneTransaction(existingUser);
 
-            recordAuditEntry(loggedInUser.getEmailAddr(), MessageFormat.format(SUCCESS_MSG, loggedInUser.getEmailAddr(), LOGIN),
-                    USER + "_" + LOGIN );
+            recordAuditEntry(loggedInUser.getEmailAddr(), MessageFormat.format(SUCCESS_MSG, loggedInUser.getEmailAddr(),
+                    LOGIN), USER.concat(UNDER_SCORE+LOGIN));
 
         } else {
             model.addAttribute(MODEL_LOGIN_ERROR, INVALID_LOGIN);
