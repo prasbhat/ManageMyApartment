@@ -22,7 +22,6 @@ import java.io.UnsupportedEncodingException;
 import java.text.MessageFormat;
 import java.util.Date;
 
-@EnableWebMvc
 @ControllerAdvice
 public class GlobalErrorController implements ManageMyApartmentConstants {
 
