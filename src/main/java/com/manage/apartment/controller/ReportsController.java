@@ -172,7 +172,7 @@ public class ReportsController implements ManageMyApartmentConstants {
                 reportConfigMap.put(OBJ_DATA_LIST, transactionSummaryService.getTransactionByMonthYear(
                         reportObj.getSelectMonth(), reportObj.getExpenseType()));
                 reportConfigMap.put(REPORT_NAME, FOLDER_REPORTS.concat(VIEW_TRX_SUMM_REPORT));
-                reportConfigMap.put(PDF_FILENAME, PDF_TRX_REPORTS);
+                reportConfigMap.put(PDF_FILENAME, PDF_TRX_REPORTS.concat(reportObj.getExpenseType() + UNDER_SCORE));
                 reportConfigMap.put(TITLE_TEXT, reportObj.getSelectMonth());
                 reportConfigMap.put(MODEL_TOTAL_EXP_OBJ, transactionSummaryService.getTotalTransactionAmount(
                         reportObj.getSelectMonth()));
