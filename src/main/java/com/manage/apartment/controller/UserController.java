@@ -170,6 +170,8 @@ public class UserController implements ManageMyApartmentConstants {
         String methodName = Thread.currentThread().getStackTrace()[1].getMethodName();
         LOGGER.info(MessageFormat.format(LOGGER_ENTRY, className, methodName));
 
+        Map<String, String> bindErrorsMap = new HashMap<>();
+
         ManageMyApartmentUtil.modelDataLoad(model);
         ResidentUsers loggedInUser = (ResidentUsers) request.getSession().getAttribute(MODEL_LOGIN_USER);
 
@@ -182,7 +184,6 @@ public class UserController implements ManageMyApartmentConstants {
         }
 
         ModelAndView mav = registerUser(loggedInUser, model);
-        Map<String, String> bindErrorsMap = new HashMap<>();
 
         if (ManageMyApartmentUtil.hasBindingErrors(bindingResult, model)) {
             return mav;
@@ -195,7 +196,7 @@ public class UserController implements ManageMyApartmentConstants {
             bindErrorsMap = residentUserValidator.residentUserValidation(registeringUser, CREATE);
 
             if (bindErrorsMap.size() == 0) {
-                registeringUser = prepareUserObject(registeringUser);
+                registeringUser = prepareUserObject(registeringUser, CREATE);
                 userService.createUser(registeringUser);
             } else {
                 mav = new ModelAndView(VIEW_REGISTER_USER, MODEL_USER_OBJ, registeringUser);
@@ -242,20 +243,7 @@ public class UserController implements ManageMyApartmentConstants {
                 bindErrorsMap = residentUserValidator.residentUserValidation(userObjData, UPDATE);
 
                 if (bindErrorsMap.size() == 0) {
-                    UploadFile uploadFile = userObjData.getAdditionalUserDetails().getUploadFile();
-
-                    if (null == uploadFile) {
-                        uploadFile = userDbObj.getAdditionalUserDetails().getUploadFile();
-                        uploadFile.setUpdationDate(new Timestamp(System.currentTimeMillis()));
-                    } else {
-                        uploadFile = ManageMyApartmentUtil.uploadFileDetails(userObjData.getAdditionalUserDetails()
-                                .getUploadFile(), REPORT_DOC_TYPE.user.name());
-                    }
-
-                    userObjData.getAdditionalUserDetails().setUploadFile(uploadFile);
-
-                    userObjData.setCreationDate(userDbObj.getCreationDate());
-                    userObjData.setUpdationDate(new Timestamp(System.currentTimeMillis()));
+                    userObjData = prepareUserObject(userObjData, UPDATE);
                     userService.createUser(userObjData);
                 } else {
                     mav = new ModelAndView(VIEW_UPDATE_USER, MODEL_UPDATE_USER_OBJ, userObjData);
@@ -339,18 +327,38 @@ public class UserController implements ManageMyApartmentConstants {
         return new ModelAndView(VIEW_RESET_PASSWORD);
     }
 
-    private ResidentUsers prepareUserObject(ResidentUsers registeringUser) {
+    private ResidentUsers prepareUserObject(ResidentUsers registeringUser, String actionType) {
         String methodName = Thread.currentThread().getStackTrace()[1].getMethodName();
         LOGGER.info(MessageFormat.format(LOGGER_ENTRY, className, methodName));
 
-        UploadFile uploadFile = ManageMyApartmentUtil.uploadFileDetails(registeringUser.getAdditionalUserDetails().
-                getUploadFile(), REPORT_DOC_TYPE.user.name());
-        registeringUser.getAdditionalUserDetails().setUploadFile(uploadFile);
-        registeringUser.getAdditionalUserDetails().setUserRole(USER_ROLE.USER.toString());
-        registeringUser.getAdditionalUserDetails().setIsActive(Boolean.TRUE);
+        if(actionType.equals(UPDATE)) {
+            UploadFile uploadFile;
 
-        registeringUser.setPassword(ManageMyApartmentUtil.cryptWithMD5(registeringUser.getPassword()));
-        registeringUser.setCreationDate(new Timestamp(System.currentTimeMillis()));
+            if(0 < registeringUser.getAdditionalUserDetails().getUploadFile().getTempFile().getSize()){
+                uploadFile = ManageMyApartmentUtil.uploadFileDetails(registeringUser.getAdditionalUserDetails().
+                        getUploadFile(), REPORT_DOC_TYPE.transact.name());
+            } else {
+                uploadFile = registeringUser.getAdditionalUserDetails().getUploadFile();
+                uploadFile.setUpdationDate(new Timestamp(System.currentTimeMillis()));
+            }
+
+            registeringUser.getAdditionalUserDetails().setUploadFile(uploadFile);
+        }
+
+        if (actionType.equals(CREATE)) {
+            if(0 < registeringUser.getAdditionalUserDetails().getUploadFile().getTempFile().getSize()){
+                UploadFile uploadFile = ManageMyApartmentUtil.uploadFileDetails(registeringUser.getAdditionalUserDetails().
+                        getUploadFile(), REPORT_DOC_TYPE.transact.name());
+                registeringUser.getAdditionalUserDetails().setUploadFile(uploadFile);
+            }
+
+            registeringUser.getAdditionalUserDetails().setUserRole(USER_ROLE.USER.toString());
+            registeringUser.getAdditionalUserDetails().setIsActive(Boolean.TRUE);
+
+            registeringUser.setPassword(ManageMyApartmentUtil.cryptWithMD5(registeringUser.getPassword()));
+        }
+
+        registeringUser.setCreationDate(registeringUser.getCreationDate());
         registeringUser.setUpdationDate(new Timestamp(System.currentTimeMillis()));
 
         LOGGER.info(MessageFormat.format(LOGGER_EXIT, className, methodName));
