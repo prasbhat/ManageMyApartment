@@ -4,7 +4,8 @@
 <head>
     <meta charset="UTF-8"/>
     <title>Manage My Apartment</title>
-    <link rel="stylesheet" type="text/css" href="../css/manage-my-apartment.css" th:href="@{/css/manage-my-apartment.css}"/>
+    <link rel="stylesheet" type="text/css" href="../css/manage-my-apartment.css"
+          th:href="@{/css/manage-my-apartment.css}"/>
     <link rel="stylesheet" type="text/css" href="../css/login-style.css" th:href="@{/css/login-style.css}"/>
     <link rel="stylesheet" type="text/css" th:href="@{/bootstrap-3.3.7/css/bootstrap.min.css}"/>
     <link rel="stylesheet" type="text/css" th:href="@{/bootstrap-3.3.7/css/bootstrap-theme.min.css}"/>
@@ -14,7 +15,7 @@
 </head>
 
 <body>
-<header th:fragment="custom-header">
+    <header th:fragment="custom-header">
     <img th:src="@{/images/logo.jpg}" style="width:130px;height:65px"/>
     S V LAKEVIEW APARTMENT OWNERS ASSOCIATION MANAGEMENT PORTAL
     <div th:if="${loggedInUser != null and loggedInUser.emailAddr != null}">

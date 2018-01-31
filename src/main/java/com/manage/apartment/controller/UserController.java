@@ -196,7 +196,7 @@ public class UserController implements ManageMyApartmentConstants {
             bindErrorsMap = residentUserValidator.residentUserValidation(registeringUser, CREATE);
 
             if (bindErrorsMap.size() == 0) {
-                registeringUser = prepareUserObject(registeringUser, CREATE);
+                registeringUser = prepareUserObject(registeringUser, new ResidentUsers(), CREATE);
                 userService.createUser(registeringUser);
             } else {
                 mav = new ModelAndView(VIEW_REGISTER_USER, MODEL_USER_OBJ, registeringUser);
@@ -243,13 +243,14 @@ public class UserController implements ManageMyApartmentConstants {
                 bindErrorsMap = residentUserValidator.residentUserValidation(userObjData, UPDATE);
 
                 if (bindErrorsMap.size() == 0) {
-                    userObjData = prepareUserObject(userObjData, UPDATE);
+                    userObjData = prepareUserObject(userObjData, userDbObj, UPDATE);
                     userService.createUser(userObjData);
                 } else {
                     mav = new ModelAndView(VIEW_UPDATE_USER, MODEL_UPDATE_USER_OBJ, userObjData);
                 }
             } catch (Exception ex) {
-                bindErrorsMap.put(KEY_ERRORS, ex.getLocalizedMessage());
+                ex.printStackTrace();
+                bindErrorsMap.put(KEY_ERRORS, ex.getMessage());
             }
         } else {
             bindErrorsMap.put(KEY_ERRORS, INVALID_USER);
@@ -327,18 +328,17 @@ public class UserController implements ManageMyApartmentConstants {
         return new ModelAndView(VIEW_RESET_PASSWORD);
     }
 
-    private ResidentUsers prepareUserObject(ResidentUsers registeringUser, String actionType) {
+    private ResidentUsers prepareUserObject(ResidentUsers registeringUser, ResidentUsers userDbObj, String actionType) {
         String methodName = Thread.currentThread().getStackTrace()[1].getMethodName();
         LOGGER.info(MessageFormat.format(LOGGER_ENTRY, className, methodName));
 
         if(actionType.equals(UPDATE)) {
-            UploadFile uploadFile;
+            UploadFile uploadFile = registeringUser.getAdditionalUserDetails().getUploadFile();
 
-            if(0 < registeringUser.getAdditionalUserDetails().getUploadFile().getTempFile().getSize()){
-                uploadFile = ManageMyApartmentUtil.uploadFileDetails(registeringUser.getAdditionalUserDetails().
-                        getUploadFile(), REPORT_DOC_TYPE.transact.name());
+            if(null != uploadFile && 0 < uploadFile.getTempFile().getSize()){
+                uploadFile = ManageMyApartmentUtil.uploadFileDetails(uploadFile, REPORT_DOC_TYPE.transact.name());
             } else {
-                uploadFile = registeringUser.getAdditionalUserDetails().getUploadFile();
+                uploadFile = userDbObj.getAdditionalUserDetails().getUploadFile();
                 uploadFile.setUpdationDate(new Timestamp(System.currentTimeMillis()));
             }
 
