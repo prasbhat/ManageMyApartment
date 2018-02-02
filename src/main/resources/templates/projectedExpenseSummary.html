@@ -28,13 +28,14 @@
 
     <div id="add_row_table" style="display:none;">
         <form id="projectedExpenseSummaryForm" class="form-inline" th:action="@{/prjExpSummAdd}"
-              th:object="${prjExpSummObj}" method="post">
+              th:object="${prjExpSummObj}" method="post"  enctype="multipart/form-data">
             <table id="AddRowTable" class="table table-striped">
                 <thead class="floral-background">
                 <tr>
                     <th>Description</th>
                     <th>Amount(&#8377;)</th>
                     <th>Month/Year</th>
+                    <th>Upload Receipt</th>
                     <th>Add</th>
                 </tr>
                 </thead>
@@ -51,6 +52,8 @@
                         <input type="month" placeholder="Enter Month" name="prjExpSummPrd" th:field="*{prjExpSummMthYr}"
                                required="true"/>
                     </td>
+                    <td><input type="file" class="form-control" name="fileUpload" accept="application/pdf"
+                               th:field="*{uploadFile.tempFile}"/></td>
                     <td colspan="2"><input type="submit" id="addButton" class="button" value="Add"/></td>
                 </tr>
                 </tbody>
@@ -68,6 +71,7 @@
             <tr>
                 <th>Description</th>
                 <th>Amount (&#8377;)</th>
+                <th>Uploaded Receipt</th>
                 <th th:if="${(isAdmin and isProjectedAllowed) or isSuperAdmin and !reportsPage}">Delete</th>
             </tr>
             </thead>
@@ -75,6 +79,15 @@
             <tr th:each="prjExpSummObj : ${prjExpSummObjList}">
                 <td th:text="${prjExpSummObj.prjExpSummDesc}"/>
                 <td th:text="${prjExpSummObj.prjExpSummAmt}"/>
+                <td th:if="${prjExpSummObj.uploadFile == null}">
+                    NA
+                </td>
+                <td th:if="${prjExpSummObj.uploadFile != null}">
+                    <a href="#" th:href="@{/getPdf(systemId=${prjExpSummObj.systemPrjExpSummId},
+                    docType=${prjExpSummObj.uploadFile.docUploadType})}">
+                        <span th:text="${prjExpSummObj.uploadFile.filename}"></span>
+                    </a>
+                </td>
                 <td th:if="${(isAdmin and isProjectedAllowed) or isSuperAdmin and !reportsPage}">
                     <a href="#"
                        th:href="@{/prjExpSummDel/{prjExpSummId}/(prjExpSummId=${prjExpSummObj.systemPrjExpSummId})}">

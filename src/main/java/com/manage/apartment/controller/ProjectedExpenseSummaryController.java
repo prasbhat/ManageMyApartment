@@ -5,6 +5,7 @@ import com.manage.apartment.Util.ManageMyApartmentUtil;
 import com.manage.apartment.model.ProjectedExpenseSummary;
 import com.manage.apartment.model.Reports;
 import com.manage.apartment.model.ResidentUsers;
+import com.manage.apartment.model.UploadFile;
 import com.manage.apartment.repository.ProjectedExpenseSummaryRepository;
 import com.manage.apartment.service.ProjectedExpenseSummaryService;
 import org.apache.log4j.Logger;
@@ -96,6 +97,13 @@ public class ProjectedExpenseSummaryController implements ManageMyApartmentConst
 
         if (!manageMyApartmentUtil.isMonthFreezed(projectedExpenseSummary.getPrjExpSummMthYr())) {
             projectedExpenseSummary.setCreationDate(new Timestamp(System.currentTimeMillis()));
+
+            if(0 < projectedExpenseSummary.getUploadFile().getTempFile().getSize()){
+                UploadFile uploadFile = ManageMyApartmentUtil.uploadFileDetails(projectedExpenseSummary.
+                        getUploadFile(), REPORT_DOC_TYPE.project.name());
+                projectedExpenseSummary.setUploadFile(uploadFile);
+            }
+
             prjExpSummService.createProjectSummary(projectedExpenseSummary);
             totalAmountCalculation(model);
 

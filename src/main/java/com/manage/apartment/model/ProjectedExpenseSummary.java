@@ -3,6 +3,7 @@ package com.manage.apartment.model;
 import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.*;
+import javax.validation.Valid;
 import java.sql.Timestamp;
 
 /**
@@ -20,6 +21,10 @@ public class ProjectedExpenseSummary {
     private float prjExpSummAmt;
     private String prjExpSummMthYr;
     private Timestamp creationDate;
+
+    @Valid
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    UploadFile uploadFile;
 
     public int getSystemPrjExpSummId() {
         return systemPrjExpSummId;
@@ -61,14 +66,23 @@ public class ProjectedExpenseSummary {
         this.creationDate = creationDate;
     }
 
+    public UploadFile getUploadFile() {
+        return uploadFile;
+    }
+
+    public void setUploadFile(UploadFile uploadFile) {
+        this.uploadFile = uploadFile;
+    }
+
     @Override
     public String toString() {
         return "ProjectedExpenseSummary{" +
                 "systemPrjExpSummId=" + systemPrjExpSummId +
                 ", prjExpSummDesc='" + prjExpSummDesc + '\'' +
                 ", prjExpSummAmt=" + prjExpSummAmt +
-                ", prjExpSummMthYr=" + prjExpSummMthYr +
+                ", prjExpSummMthYr='" + prjExpSummMthYr + '\'' +
                 ", creationDate=" + creationDate +
+                ", uploadFile=" + uploadFile +
                 '}';
     }
 }

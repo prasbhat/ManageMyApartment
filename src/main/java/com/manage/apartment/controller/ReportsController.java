@@ -151,6 +151,9 @@ public class ReportsController implements ManageMyApartmentConstants {
             case transact:
                 fileForView = transactionSummaryService.getOneTransactionSummary(systemId).getUploadFile();
                 break;
+            case project:
+                fileForView = projectedExpenseSummaryService.getOneProjectSummary(systemId).getUploadFile();
+                break;
             case user:
                 fileForView = userService.findOneUser(systemId).getAdditionalUserDetails().getUploadFile();
                 break;
